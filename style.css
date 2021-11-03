@@ -40,7 +40,7 @@ body {
 
 #search {
     width: 300px;
-    margin: 50px;
+    margin: 50px 50px 0 50px;
     padding: 10px;
     border-radius: 50px;
 }
@@ -49,6 +49,25 @@ body {
     display: none;
 }
 
+#result-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    width: 300px;
+
+    background-color: rgba(255, 255, 255, 0.616);
+
+}
+
+#result-list div {
+    width: 100%;
+}
+
+#result-list div:hover {
+    background-color: rgba(179, 179, 179, 0.616);
+}
 
 @-webkit-keyframes AnimationName {
     0% {

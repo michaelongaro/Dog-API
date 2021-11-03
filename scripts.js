@@ -1,8 +1,8 @@
 const api_key = '5A30FxiSCT46fzC7G35geCxlL0Xeuqwp';
-const forcast_url = 'http://dataservice.accuweather.com/forecasts/v1/daily/5day/338949?apikey=5A30FxiSCT46fzC7G35geCxlL0Xeuqwp'
 
 const search = document.getElementById("search");
 const container = document.getElementById("container");
+const res_list = document.getElementById("result-list");
 
 const monday = document.getElementById("monday")
 const tuesday = document.getElementById("tuesday")
@@ -19,15 +19,26 @@ let current_day = d.getDay()
 
 let current_forcast_days = []
 
+let current_search_str = "";
 let autofill_str = "";
 
 window.addEventListener("keyup", function (event) {
-    // event.code === "Enter"
-    if (event.code === "Enter") {
+
+    if ((event.which >= 65 && event.which <= 90) || (event.code === "Enter" || event.code === "Backspace")) {
+        clearAutofillResults();
         autofill_str = search.value;
-        renderAutofillResults();
+        if (autofill_str.length != 0) {
+            renderAutofillResults();
+        }
     }
+
 }, true);
+
+function clearAutofillResults() {
+    while (res_list.firstChild) {
+        res_list.removeChild(res_list.lastChild);
+    }
+}
 
 function shift_days() {
     counter = 0;
@@ -48,6 +59,11 @@ function showForcast(element) {
     element.style.display = "flex";
 }
 
+function formatCityString(unformatted_str) {
+    return unformatted_str.replaceAll(' ', '%20')
+}
+
+
 // ideally would like to filter by results that are in same country as user, how to ask without 
 // making them say yes on the popup
 //                            ^^^^^
@@ -64,16 +80,28 @@ async function getAutofillResults(str) {
 
 }
 
-async function getWeather() {
-    let url = "http://dataservice.accuweather.com/locations/v1/cities/search?apikey=5A30FxiSCT46fzC7G35geCxlL0Xeuqwp&q=Arden%20Hills";
-    // , {
-    //     method: 'POST',
-    //     mode: 'cors',
-    //     headers: {
-    //         '/api/facts': '?number=5'
-    //     },
-    //     body: JSON.stringify(data)
-    // }
+async function getCityCode(city) {
+    const formatted_city_str = formatCityString(city);
+    let city_code_url = `http://dataservice.accuweather.com/locations/v1/cities/search?apikey=5A30FxiSCT46fzC7G35geCxlL0Xeuqwp&q=${formatted_city_str}`;
+
+    try {
+        let res_three = await fetch(city_code_url)
+
+        return await res_three.json();
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function formattedCityCode(city_code) {
+    let code = await getCityCode(city_code);
+    // console.log(code[0]["Key"]);
+    return code[0]["Key"];
+}
+
+async function getWeather(city_loc) {
+    let forcast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=5A30FxiSCT46fzC7G35geCxlL0Xeuqwp`;
+
     try {
         let res = await fetch(forcast_url)
 
@@ -87,19 +115,24 @@ async function renderAutofillResults() {
     let results = await getAutofillResults(autofill_str);
 
     for (const result of results) {
-        //result[LocalizedName]
-        document.createElement("div")
-        
+        let temp_div = document.createElement("div");
+        temp_div.innerHTML = `${result["LocalizedName"]}`;
+        res_list.append(temp_div);
+
+        temp_div.addEventListener("click", function (event) {
+            renderWeather((formattedCityCode(result["LocalizedName"])));
+        }, true);
+
     }
 
     console.log(results);
     autofill_str = "";
 }
 
-async function renderWeather() {
-    let users = await getWeather();
+async function renderWeather(city_loc) {
+    let raw_days = await getWeather(city_loc);
     shift_days();
-    days_arr = users["DailyForecasts"];
+    days_arr = raw_days["DailyForecasts"];
 
     // should most likely just not include the days that don't have forcast data 
     for (let i = 0; i < 5; i++) {
@@ -113,11 +146,10 @@ async function renderWeather() {
 
     }
 
-    console.log(users);
+    // console.log(days_arr);
     
     container.style.display = "flex";
     document.querySelectorAll('.day').forEach(showForcast);
 
 }
 
-//renderWeather();
