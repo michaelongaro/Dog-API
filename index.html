@@ -10,16 +10,17 @@
 </head>
 <body>
 
-    <h1> Five Day Forcast </h1>
+    <h1 id="title"> Five Day Forcast for...</h1>
 
-    <!-- add a "for... <city name> once user selects a city"-->
-    <input id="search" type="text" name="search-bar" placeholder="City Name" size="30" required>
+    <div id="city"></div>
+
+    <input id="search" type="text" name="search-bar" placeholder="Enter city here" size="30" required>
     <input type="button" id="btnSearch" Value="Search" onclick="getAutofillResults();" />
     <div id="result-list">
 
     </div>
-    <div id="container">
 
+    <div id="container">
         <div id="sunday" class="day">Sunday</div>
         <div id="monday" class="day">Monday</div>
         <div id="tuesday" class="day">Tuesday</div>
@@ -27,11 +28,7 @@
         <div id="thursday" class="day">Thursday</div>
         <div id="friday" class="day">Friday</div>
         <div id="saturday" class="day">Saturday</div>
-        
     </div>
-    
-    
-
 
     <script src="/scripts.js"></script>
 </body>

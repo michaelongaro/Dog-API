@@ -13,6 +13,16 @@ body {
     animation: AnimationName 13s ease infinite;
 }
 
+#title {
+    margin-bottom: 100px;
+}
+
+#city {
+    display: none;
+    margin-top: 100px;
+    
+}
+
 #container {
     display: none;
     justify-content: center;

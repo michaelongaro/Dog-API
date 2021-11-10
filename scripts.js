@@ -1,5 +1,7 @@
 const api_key = '5A30FxiSCT46fzC7G35geCxlL0Xeuqwp';
 
+const cityName = document.getElementById("city");
+
 const search = document.getElementById("search");
 const container = document.getElementById("container");
 const res_list = document.getElementById("result-list");
@@ -44,11 +46,13 @@ function shift_days() {
     counter = 0;
     while (counter < 5) {
         if (current_day + counter > 6) {
-            current_forcast_days.push(days[(current_day + counter) % 6]);
+            current_forcast_days.push(days[(current_day + counter) % 7]);
             console.log((current_day + counter) % 6);
         }
-        current_forcast_days.push(days[current_day + counter]);
-        console.log((current_day + counter));
+        else {
+            current_forcast_days.push(days[current_day + counter]);
+            console.log((current_day + counter));
+        }
         counter += 1;
     }
     return current_forcast_days;
@@ -57,6 +61,26 @@ function shift_days() {
 
 function showForcast(element) {
     element.style.display = "flex";
+}
+
+// hides days that are not part of forcast
+function hideExtraDays() {
+    
+    for (const day of current_forcast_days) {
+        if (!day.hasChildNodes()) {
+            day.style.display = "none";
+        }
+    }
+}
+
+function showCityName(city) {
+    cityName.innerHTML = city
+    cityName.style.display = "block";
+    randomizeFont(cityName)
+}
+
+function randomizeFont(element) {
+    
 }
 
 function formatCityString(unformatted_str) {
@@ -80,25 +104,6 @@ async function getAutofillResults(str) {
 
 }
 
-async function getCityCode(city) {
-    const formatted_city_str = formatCityString(city);
-    let city_code_url = `http://dataservice.accuweather.com/locations/v1/cities/search?apikey=5A30FxiSCT46fzC7G35geCxlL0Xeuqwp&q=${formatted_city_str}`;
-
-    try {
-        let res_three = await fetch(city_code_url)
-
-        return await res_three.json();
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-async function formattedCityCode(city_code) {
-    let code = await getCityCode(city_code);
-    // console.log(code[0]["Key"]);
-    return code[0]["Key"];
-}
-
 async function getWeather(city_loc) {
     let forcast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=5A30FxiSCT46fzC7G35geCxlL0Xeuqwp`;
 
@@ -120,21 +125,21 @@ async function renderAutofillResults() {
         res_list.append(temp_div);
 
         temp_div.addEventListener("click", function (event) {
-            renderWeather((formattedCityCode(result["LocalizedName"])));
+            renderWeather(result["Key"]);
         }, true);
 
-    }
 
-    console.log(results);
     autofill_str = "";
 }
 
 async function renderWeather(city_loc) {
     let raw_days = await getWeather(city_loc);
     shift_days();
+    hideExtraDays();
+    clearAutofillResults();
     days_arr = raw_days["DailyForecasts"];
-
-    // should most likely just not include the days that don't have forcast data 
+    console.log(days_arr);
+    
     for (let i = 0; i < 5; i++) {
         const max_temp = document.createElement("div");
         max_temp.innerHTML = days_arr[i]["Temperature"]["Maximum"]["Value"];
