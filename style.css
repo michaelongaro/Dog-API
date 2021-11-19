@@ -5,6 +5,8 @@ body {
     align-items: center;
     min-height: 100vh;
 
+    font-family: 'M PLUS 1', sans-serif;
+
     background: linear-gradient(127deg, #393ce8, #2fc3e4, #9dbabb);
     background-size: 600% 600%;
 
@@ -13,39 +15,54 @@ body {
     animation: AnimationName 13s ease infinite;
 }
 
-#title {
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@100;500;700&display=swap');
+
+/* #title {
     margin-bottom: 100px;
-}
+} */
 
 #city {
     display: none;
-    margin-top: 100px;
-    
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 #container {
     display: none;
     justify-content: center;
     align-items: flex-start;
-    border-width: 3px;
+    /* border-width: 3px;
     border-color: white;
-    border-style: solid;
+    border-style: solid; */
 }
 
 .day {
-   display: none;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   padding: 25px;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 25px 0 25px 0;
     border-width: 3px;
+    background-color: rgba(216, 216, 216, 0.281);
     border-color: rgba(216, 216, 216, 0.616);
+    border-radius: 5px;
     border-style: solid;
+    margin-left: 5px;
+    margin-right: 5px;
    
 }
 
 .day div {
+    display: flex;
     margin: 5px;
+}
+
+.loading {
+    height: 20px;
+    width: 20px;
+     
+    opacity: .7;
+    animation: skeleton-loading 1s linear infinite alternate;
 }
 
 #search {
@@ -53,6 +70,7 @@ body {
     margin: 50px 50px 0 50px;
     padding: 10px;
     border-radius: 50px;
+    border-style: none;
 }
 
 #btn-search {
@@ -73,6 +91,8 @@ body {
 
 #result-list div {
     width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 #result-list div:hover {
@@ -123,5 +143,15 @@ body {
 
 #btnSearch { 
     display: none;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: hsla(199, 20%, 70%, 0.082);
+  }
+
+  100% {
+    background-color: hsla(204, 20%, 95%, 0.664);
+  }
 }
 
