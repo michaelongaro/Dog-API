@@ -4,28 +4,31 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Weather Forecast</title>
+    <title>Universal Forecast</title>
 
     <link rel="stylesheet" href="/style.css" />
+    <script src="./node_modules/animejs/lib/anime.min.js"></script>
   </head>
   <body>
-    <h1 id="title">Five Day Forecast for...</h1>
+    <h1 id="title">Universal Forecast</h1>
 
-    <input
-      id="search"
-      type="text"
-      name="search-bar"
-      placeholder="Enter city here"
-      size="30"
-      required
-    />
-    <input
-      type="button"
-      id="btnSearch"
-      value="Search"
-      onclick="getAutofillResults();"
-    />
-    <div id="result-list"></div>
+    <div class="inputContainer">
+      <div class="searchAndAutofillContainer">
+        <input
+          id="search"
+          type="text"
+          name="search-bar"
+          placeholder="Enter city here..."
+          size="30"
+          required
+        />
+        <!-- <label>Enter city here...</label> -->
+        <div id="result-list"></div>
+      </div>
+      <button id="btnSearch" onclick="getAutofillResults();">
+        <img id="searchIcon" src="./assets/searchButton.svg" alt="Search" />
+      </button>
+    </div>
 
     <div id="city"></div>
 
@@ -39,6 +42,6 @@
       <div id="saturday" class="day"></div>
     </div>
 
-    <script src="/scripts.js"></script>
+    <script type="module" src="/scripts.js"></script>
   </body>
 </html>

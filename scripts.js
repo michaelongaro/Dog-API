@@ -1,4 +1,9 @@
-const api_key = "5A30FxiSCT46fzC7G35geCxlL0Xeuqwp";
+// import dotenv from "./node_modules/dotenv/lib/dotenv";
+
+// dotenv.config();
+//process.env.WEATHER_API_KEY
+
+const apiKey = "5A30FxiSCT46fzC7G35geCxlL0Xeuqwp";
 
 const cityName = document.getElementById("city");
 
@@ -29,6 +34,49 @@ const days_str = [
   "Saturday",
 ];
 
+const weatherIcons = {
+  1: "./assets/day.svg",
+  2: "./assets/day.svg",
+  3: "./assets/lightDayClouds.svg",
+  4: "./assets/mediumDayClouds.svg",
+  5: "./assets/mediumDayClouds.svg",
+  6: "./assets/heavyDayClouds.svg",
+  7: "./assets/heavyDayClouds.svg",
+  8: "./assets/heavyDayClouds.svg",
+  11: "./assets/heavyDayClouds.svg",
+  12: "./assets/lightRain.svg",
+  13: "./assets/rainWithSun.svg",
+  14: "./assets/rainWithSun.svg",
+  15: "./assets/thunder.svg",
+  16: "./assets/rainWithSun.svg",
+  17: "./assets/rainWithSun.svg",
+  18: "./assets/heavyRain.svg",
+  19: "./assets/lightSnow.svg",
+  20: "./assets/lightSnow.svg",
+  21: "./assets/lightSnow.svg",
+  22: "./assets/heavySnow.svg",
+  23: "./assets/snowWithSun.svg",
+  24: "./assets/mediumSnow.svg",
+  25: "./assets/mediumSnow.svg",
+  26: "./assets/mediumSnow.svg",
+  27: "./assets/mediumSnow.svg",
+  28: "./assets/mediumSnow.svg",
+  29: "./assets/mediumSnow.svg",
+  32: "./assets/lightDayClouds.svg",
+  33: "./assets/night.svg",
+  34: "./assets/lightNightClouds.svg",
+  35: "./assets/lightNightClouds.svg",
+  36: "./assets/lightNightClouds.svg",
+  37: "./assets/mediumNightClouds.svg",
+  38: "./assets/heavyNightClouds.svg",
+  39: "./assets/mediumNightClouds.svg",
+  40: "./assets/mediumNightClouds.svg",
+  41: "./assets/mediumNightClouds.svg",
+  42: "./assets/mediumNightClouds.svg",
+  43: "./assets/mediumNightClouds.svg",
+  44: "./assets/mediumNightClouds.svg",
+};
+
 let cards_created = false;
 
 function setupCardStructure() {
@@ -42,7 +90,7 @@ function setupCardStructure() {
 
     weather_status_icon = document.createElement("div");
     weather_status_icon.setAttribute("id", "weather-status-icon");
-    weather_status_icon.setAttribute("class", "loading");
+    // weather_status_icon.setAttribute("class", "loading");
 
     // appending children divs to parent
     day_icon_container.append(day_of_week);
@@ -65,11 +113,11 @@ function setupCardStructure() {
     // create divs for the actual temperatures
     high_temperature = document.createElement("div");
     high_temperature.setAttribute("id", "high-temperature");
-    high_temperature.setAttribute("class", "loading");
+    // high_temperature.setAttribute("class", "loading");
 
     low_temperature = document.createElement("div");
     low_temperature.setAttribute("id", "low-temperature");
-    low_temperature.setAttribute("class", "loading");
+    // low_temperature.setAttribute("class", "loading");
 
     // appending both labels and temps to their parent divs
     high_container.append(high_label);
@@ -91,61 +139,29 @@ function setupCardStructure() {
   cards_created = true;
 }
 
-const fonts = [
-  "Arial, sans-serif",
-  "Helvetica, sans-serif",
-  "Gill Sans, sans-serif",
-  "Lucida, sans-serif",
-  "Helvetica Narrow, sans-serif",
-  "sans-serif",
-  "Times, serif",
-  "Times New Roman, serif",
-  "Palatino, serif",
-  "Bookman, serif",
-  "New Century Schoolbook, serif",
-  "serif",
-  "Andale Mono, monospace",
-  "Courier New, monospace",
-  "Courier, monospace",
-  "Lucidatypewriter, monospace",
-  "Fixed, monospace",
-  "monospace",
-  "Comic Sans, Comic Sans MS, cursive",
-  "Zapf Chancery, cursive",
-  "Coronetscript, cursive",
-  "Florence, cursive",
-  "Parkavenue, cursive",
-  "cursive",
-  "Impact, fantasy",
-  "Arnoldboecklin, fantasy",
-  "Oldtown, fantasy",
-  "Blippo, fantasy",
-  "Brushstroke, fantasy",
-  "fantasy",
-];
-
 const d = new Date();
 let current_day = d.getDay();
 
-let current_forcast_days = [];
+let current_forecast_days = [];
 
 let current_search_str = "";
-let autofill_str = "";
+// let autofill_str = "";
 
 window.addEventListener(
   "keyup",
-  function (event) {
+  debounce((event) => {
     if (
       (event.which >= 65 && event.which <= 90) ||
       event.code === "Backspace"
     ) {
       clearAutofillResults();
-      autofill_str = search.value;
-      if (autofill_str.length != 0) {
+      if (search.value === "") {
+        res_list.style.height = 0;
+      } else {
         renderAutofillResults();
       }
     }
-  },
+  }, 250),
   true
 );
 
@@ -160,16 +176,16 @@ function clearSearchBar() {
 }
 
 function shift_days() {
-  counter = 0;
+  let counter = 0;
   while (counter < 5) {
     if (current_day + counter > 6) {
-      current_forcast_days.push(days[(current_day + counter) % 7]);
+      current_forecast_days.push(days[(current_day + counter) % 7]);
     } else {
-      current_forcast_days.push(days[current_day + counter]);
+      current_forecast_days.push(days[current_day + counter]);
     }
     counter += 1;
   }
-  return current_forcast_days;
+  return current_forecast_days;
 }
 
 function showCityName(city) {
@@ -177,32 +193,14 @@ function showCityName(city) {
 
   cityName.innerHTML = city;
   cityName.style.display = "block";
-  randomizeFont(cityName);
-}
-
-function randomizeFont(element) {
-  console.log(fonts[Math.floor(Math.random() * fonts.length)]);
-  element.style.fontFamily = fonts[Math.floor(Math.random() * fonts.length)];
-  element.style.fontSize = "30pt";
+  cityName.style.fontSize = "20pt";
 }
 
 async function getAutofillResults(str) {
-  let autofill_url = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=5A30FxiSCT46fzC7G35geCxlL0Xeuqwp&q=${str}`;
+  let autofill_url = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${apiKey}&q=${str}`;
 
   try {
-    let res_two = await fetch(autofill_url);
-
-    return await res_two.json();
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function getWeather(city_loc) {
-  let forcast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=5A30FxiSCT46fzC7G35geCxlL0Xeuqwp`;
-
-  try {
-    let res = await fetch(forcast_url);
+    let res = await fetch(autofill_url);
 
     return await res.json();
   } catch (error) {
@@ -210,16 +208,55 @@ async function getWeather(city_loc) {
   }
 }
 
-async function renderAutofillResults() {
-  let results = await getAutofillResults(autofill_str);
-  for (const result of results) {
-    let temp_div = document.createElement("div");
-    temp_div.innerHTML = `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`;
-    res_list.append(temp_div);
+async function getWeather(city_loc) {
+  let forecast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=${apiKey}`;
 
-    temp_div.addEventListener(
+  try {
+    let res = await fetch(forecast_url);
+
+    return await res.json();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function debounce(cb, delay = 1000) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      cb(...args);
+    }, delay);
+  };
+}
+
+function currentHoursInTimezone(timeZoneStr) {
+  return new Date(timeZoneStr).getHours();
+}
+
+search.addEventListener("focus", () => {
+  if (search.value !== "" && res_list.style.height === "0px") {
+    renderAutofillResults();
+  }
+});
+
+window.addEventListener("click", (e) => {
+  if (!res_list.contains(e.target) && !search.contains(e.target)) {
+    res_list.style.height = 0;
+  }
+});
+
+async function renderAutofillResults() {
+  let results = await getAutofillResults(search.value);
+  for (const result of results) {
+    let autofillResult = document.createElement("div");
+    autofillResult.innerHTML = `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`;
+    res_list.append(autofillResult);
+
+    autofillResult.addEventListener(
       "click",
-      function (event) {
+      () => {
+        res_list.style.height = 0;
         showCityName(
           `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`
         );
@@ -228,27 +265,20 @@ async function renderAutofillResults() {
       true
     );
 
-    temp_div.addEventListener(
+    autofillResult.addEventListener(
       "keyup",
-      function (event) {
-        if (event.code === "Enter") {
-          event.preventDefault();
-          temp_div.click();
+      (e) => {
+        if (e.code === "Enter") {
+          e.preventDefault();
+          autofillResult.click();
         }
       },
       true
     );
-
-    autofill_str = "";
   }
+
+  res_list.style.height = "350px";
 }
-// gotta have min width for daily weather + make it justify-content center
-// drop the random fonts and just pick one that is super clean + modern
-//
-//
-//  change to typescript
-//
-//
 
 async function renderWeather(city_loc) {
   let raw_days = await getWeather(city_loc);
@@ -259,38 +289,52 @@ async function renderWeather(city_loc) {
   }
   clearAutofillResults();
   clearSearchBar();
-  days_arr = raw_days["DailyForecasts"];
+  let days_arr = raw_days["DailyForecasts"];
   container.style.display = "flex";
 
   for (let k = 0; k < 5; k++) {
-    current_forcast_days[k].style.display = "flex";
+    current_forecast_days[k].style.display = "flex";
   }
 
-  // ideally want to also include the wind values + change the angle of the background gradient to match the direction of the wind
+  // setTimeout(() => {
+  //   for (let i = 0; i < 5; i++) {
+  //     current_forecast_days[i].children[0].children[1].classList.remove(
+  //       "loading"
+  //     );
+  //     current_forecast_days[i].children[1].children[1].classList.remove(
+  //       "loading"
+  //     );
+  //     current_forecast_days[i].children[2].children[1].classList.remove(
+  //       "loading"
+  //     );
+  //   }
+  // }, 3000);
 
   setTimeout(() => {
     for (let i = 0; i < 5; i++) {
-      current_forcast_days[i].children[0].children[1].classList.remove(
-        "loading"
-      );
-      current_forcast_days[i].children[1].children[1].classList.remove(
-        "loading"
-      );
-      current_forcast_days[i].children[2].children[1].classList.remove(
-        "loading"
-      );
-    }
-  }, 3000);
+      const currentHours = currentHoursInTimezone(days_arr[i]["Date"]);
+      const morningOrEvening = currentHours < 21 ? "Day" : "Night";
 
-  setTimeout(() => {
-    for (let j = 0; j < 5; j++) {
-      current_forcast_days[
-        j
-      ].children[0].children[1].innerHTML = `<img src='./weather-images/${days_arr[j]["Day"]["Icon"]}-s.png'>`;
-      current_forcast_days[j].children[1].children[1].innerHTML =
-        days_arr[j]["Temperature"]["Maximum"]["Value"];
-      current_forcast_days[j].children[2].children[1].innerHTML =
-        days_arr[j]["Temperature"]["Minimum"]["Value"];
+      current_forecast_days[i].children[0].children[1].innerHTML = `<img src=${
+        weatherIcons[days_arr[i][morningOrEvening]["Icon"]]
+      }>`;
+      current_forecast_days[i].children[1].children[1].innerHTML =
+        days_arr[i]["Temperature"]["Maximum"]["Value"];
+      current_forecast_days[i].children[2].children[1].innerHTML =
+        days_arr[i]["Temperature"]["Minimum"]["Value"];
     }
-  }, 3001);
+  }, 1500);
 }
+
+// structure should be
+//                      day
+//
+//       Min                           Max
+//
+//        15                            35
+//
+//
+//        Precip.                      Wind
+//          5%                          13mph
+//
+// could substitute precip. for rain droplet and wind for wind icon
