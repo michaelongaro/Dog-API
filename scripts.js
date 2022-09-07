@@ -79,73 +79,10 @@ const weatherIcons = {
 
 let cards_created = false;
 
-function setupCardStructure() {
-  for (const i in days) {
-    // create parent and two child divs for day of week and weather icon
-    const day_icon_container = document.createElement("div");
-    day_icon_container.setAttribute("id", "day-icon-container");
-
-    const day_of_week = document.createElement("div");
-    day_of_week.setAttribute("id", "day-of-week");
-
-    weather_status_icon = document.createElement("div");
-    weather_status_icon.setAttribute("id", "weather-status-icon");
-    // weather_status_icon.setAttribute("class", "loading");
-
-    // appending children divs to parent
-    day_icon_container.append(day_of_week);
-    day_icon_container.append(weather_status_icon);
-
-    // create both high and low temp divs
-    const high_container = document.createElement("div");
-    high_container.setAttribute("id", "high-container");
-
-    const low_container = document.createElement("div");
-    low_container.setAttribute("id", "low-container");
-
-    // create divs for the high/low labels
-    const high_label = document.createElement("div");
-    high_label.setAttribute("id", "high-label");
-
-    const low_label = document.createElement("div");
-    low_label.setAttribute("id", "low-label");
-
-    // create divs for the actual temperatures
-    high_temperature = document.createElement("div");
-    high_temperature.setAttribute("id", "high-temperature");
-    // high_temperature.setAttribute("class", "loading");
-
-    low_temperature = document.createElement("div");
-    low_temperature.setAttribute("id", "low-temperature");
-    // low_temperature.setAttribute("class", "loading");
-
-    // appending both labels and temps to their parent divs
-    high_container.append(high_label);
-    high_container.append(high_temperature);
-
-    low_container.append(low_label);
-    low_container.append(low_temperature);
-
-    // add day of week + 'high' and 'low' text
-    day_of_week.innerHTML = days_str[i];
-    high_label.innerHTML = "High";
-    low_label.innerHTML = "Low";
-
-    days[i].append(day_icon_container);
-    days[i].append(high_container);
-    days[i].append(low_container);
-  }
-
-  cards_created = true;
-}
-
 const d = new Date();
 let current_day = d.getDay();
-
 let current_forecast_days = [];
-
-let current_search_str = "";
-// let autofill_str = "";
+let current_forecast_days_indicies = [];
 
 window.addEventListener(
   "keyup",
@@ -157,6 +94,7 @@ window.addEventListener(
       clearAutofillResults();
       if (search.value === "") {
         res_list.style.height = 0;
+        res_list.style.borderWidth = 0;
       } else {
         renderAutofillResults();
       }
@@ -176,18 +114,25 @@ function clearSearchBar() {
 }
 
 function shift_days() {
-  let counter = 0;
-  while (counter < 5) {
-    if (current_day + counter > 6) {
-      current_forecast_days.push(days[(current_day + counter) % 7]);
+  for (let i = 0; i < 5; i++) {
+    if (current_day + i > 6) {
+      // for this and below probably cleaner to be storing these into an obj
+      // where key is  days.indexOf(days[current_day + i - 7])
+      // and value is days[current_day + i - 7]
+      current_forecast_days.push(days[current_day + i - 7]);
+      current_forecast_days_indicies.push(
+        days.indexOf(days[current_day + i - 7])
+      );
     } else {
-      current_forecast_days.push(days[current_day + counter]);
+      current_forecast_days.push(days[current_day + i]);
+      current_forecast_days_indicies.push(days.indexOf(days[current_day + i]));
     }
-    counter += 1;
   }
   return current_forecast_days;
 }
 
+// probably a good convention to try to switch/follow is just changing classes instead
+// of adding these arbitrary-feeling styles all over...
 function showCityName(city) {
   cityName.innerHTML = "";
 
@@ -208,8 +153,22 @@ async function getAutofillResults(str) {
   }
 }
 
-async function getWeather(city_loc) {
-  let forecast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=${apiKey}`;
+// getting min/max daily temps + rain % + wind
+async function getWeeklyWeather(city_loc) {
+  let forecast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=${apiKey}&details=true`;
+
+  try {
+    let res = await fetch(forecast_url);
+
+    return await res.json();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// getting realFeel temp + humidity
+async function getCurrentConditions(city_loc) {
+  let forecast_url = `http://dataservice.accuweather.com/currentconditions/v1/${city_loc}?apikey=${apiKey}&details=true`;
 
   try {
     let res = await fetch(forecast_url);
@@ -243,6 +202,7 @@ search.addEventListener("focus", () => {
 window.addEventListener("click", (e) => {
   if (!res_list.contains(e.target) && !search.contains(e.target)) {
     res_list.style.height = 0;
+    res_list.style.borderWidth = 0;
   }
 });
 
@@ -257,6 +217,7 @@ async function renderAutofillResults() {
       "click",
       () => {
         res_list.style.height = 0;
+        res_list.style.borderWidth = 0;
         showCityName(
           `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`
         );
@@ -278,63 +239,141 @@ async function renderAutofillResults() {
   }
 
   res_list.style.height = "350px";
+  res_list.style.borderWidth = "2px";
+}
+
+function startSkeletonAnimation() {
+  document.getElementById("current-day").className += " loading";
+
+  for (const day of days) {
+    day.className += " loading";
+  }
+
+  console.log("started animejs");
+  anime({
+    targets:
+      "#current-day, #sunday, #monday, #tuesday, #wednesday, #thursday, #friday, #saturday",
+    loop: 1,
+    translateY: [10, -10],
+    rotateY: "360deg",
+    direction: "alternate",
+    duration: 2000,
+    easing: "easeInSine",
+    complete: () => {
+      document.getElementById("current-day").className = "day base-flex";
+      for (const day of days) {
+        day.className = "day";
+      }
+
+      document.documentElement.style.setProperty("--container-opacities", 1);
+    },
+  });
+}
+
+// FINALLY A TIME TO USE THE "ORDER" ATTRIBUTE OF A FLEX CHILD
+// TO ORDER DAYS IN LOGICAL PATTERN
+// for example today is wed so wed is in middle
+// and then it would be thurs - sun in left to rigth order, so you would have to assing that
+// I would assume in shift_cards()? yea prob best bet
+
+// ALSO learn how to make easy custom scroll-bar, prob just tweak/use one that already exists
+
+function calculateBackgroundGradientByTemp() {
+  // TODO:
 }
 
 async function renderWeather(city_loc) {
-  let raw_days = await getWeather(city_loc);
-  console.log(raw_days);
   if (!cards_created) {
-    setupCardStructure();
     shift_days();
+    cards_created = true;
   }
+
+  for (const day_index in days) {
+    console.log(day_index, current_day, day_index === current_day);
+    if (
+      !current_forecast_days_indicies.includes(parseInt(day_index)) ||
+      parseInt(day_index) === current_day
+    ) {
+      days[day_index].style.display = "none";
+    }
+  }
+
+  // expanding + showing container and child elements
+  document.documentElement.style.setProperty("--container-widths", "100%");
+  document.documentElement.style.setProperty("--container-heights", "100%");
+  document.documentElement.style.setProperty("--container-user-select", "auto");
+  document.documentElement.style.setProperty("--day-padding", "1.5rem");
+  document.documentElement.style.setProperty("--day-opacity", "1");
+
+  startSkeletonAnimation();
+
+  let five_day_forecast = await getWeeklyWeather(city_loc);
+  let current_conditions = await getCurrentConditions(city_loc);
+
   clearAutofillResults();
   clearSearchBar();
-  let days_arr = raw_days["DailyForecasts"];
-  container.style.display = "flex";
 
-  for (let k = 0; k < 5; k++) {
-    current_forecast_days[k].style.display = "flex";
-  }
-
-  // setTimeout(() => {
-  //   for (let i = 0; i < 5; i++) {
-  //     current_forecast_days[i].children[0].children[1].classList.remove(
-  //       "loading"
-  //     );
-  //     current_forecast_days[i].children[1].children[1].classList.remove(
-  //       "loading"
-  //     );
-  //     current_forecast_days[i].children[2].children[1].classList.remove(
-  //       "loading"
-  //     );
-  //   }
-  // }, 3000);
+  let formatted_forecast = five_day_forecast["DailyForecasts"];
 
   setTimeout(() => {
     for (let i = 0; i < 5; i++) {
-      const currentHours = currentHoursInTimezone(days_arr[i]["Date"]);
+      const currentHours = currentHoursInTimezone(
+        formatted_forecast[i]["Date"]
+      );
       const morningOrEvening = currentHours < 21 ? "Day" : "Night";
 
-      current_forecast_days[i].children[0].children[1].innerHTML = `<img src=${
-        weatherIcons[days_arr[i][morningOrEvening]["Icon"]]
-      }>`;
-      current_forecast_days[i].children[1].children[1].innerHTML =
-        days_arr[i]["Temperature"]["Maximum"]["Value"];
-      current_forecast_days[i].children[2].children[1].innerHTML =
-        days_arr[i]["Temperature"]["Minimum"]["Value"];
-    }
-  }, 1500);
-}
+      if (i === 0) {
+        document.getElementById("current-day-of-week").innerHTML =
+          days_str[current_day];
 
-// structure should be
-//                      day
-//
-//       Min                           Max
-//
-//        15                            35
-//
-//
-//        Precip.                      Wind
-//          5%                          13mph
-//
-// could substitute precip. for rain droplet and wind for wind icon
+        document.getElementById(
+          "weather-status-icon-7"
+        ).innerHTML = `<img src=${
+          weatherIcons[formatted_forecast[i][morningOrEvening]["Icon"]]
+        }>`;
+
+        document.getElementById(
+          "precip-percent-7"
+        ).innerHTML = `${formatted_forecast[i][morningOrEvening]["RainProbability"]}%`;
+
+        document.getElementById(
+          "current-temperature"
+        ).innerHTML = `${current_conditions[0].Temperature.Imperial.Value}°F`;
+
+        document.getElementById(
+          "low-temperature-7"
+        ).innerHTML = `${formatted_forecast[i].Temperature.Minimum.Value}°F`;
+
+        document.getElementById(
+          "high-temperature-7"
+        ).innerHTML = `${formatted_forecast[i].Temperature.Maximum.Value}°F`;
+
+        document.getElementById(
+          "current-humidity"
+        ).innerHTML = `${current_conditions[0].RelativeHumidity}%`;
+
+        document.getElementById(
+          "wind-7"
+        ).innerHTML = `${formatted_forecast[i][morningOrEvening]["Wind"]["Speed"]["Value"]}mph`;
+      } else {
+        document.getElementById(
+          `weather-status-icon-${current_forecast_days_indicies[i]}`
+        ).innerHTML = `<img src=${
+          weatherIcons[formatted_forecast[i][morningOrEvening]["Icon"]]
+        }>`;
+
+        document.getElementById(
+          `precip-percent-${current_forecast_days_indicies[i]}`
+        ).innerHTML = `${formatted_forecast[i][morningOrEvening]["RainProbability"]}%`;
+
+        document.getElementById(
+          `low-temperature-${current_forecast_days_indicies[i]}`
+        ).innerHTML = `${formatted_forecast[i].Temperature.Minimum.Value}F`;
+
+        document.getElementById(
+          `high-temperature-${current_forecast_days_indicies[i]}`
+        ).innerHTML = `${formatted_forecast[i].Temperature.Maximum.Value}F`;
+      }
+    }
+  }, 4100);
+}

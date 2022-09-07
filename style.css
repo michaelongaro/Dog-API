@@ -1,7 +1,26 @@
+:root {
+    --container-opacities: 0;
+    --container-widths: 0;
+    --container-heights: 0;
+    --container-user-select: "none";
+    --day-padding: 0;
+    --day-opacity: 0;
+}
+
 @font-face {
     font-family: "Hero";
     src: url("./assets/Hero-Regular.ttf") format("truetype");
 }
+
+#container * {
+    opacity: var(--container-opacities);
+    width: var(--container-widths);
+    height: var(--container-heights);
+    user-select: var(--container-user-select);
+    transition: all 200ms;
+}
+
+
 
 body {
     display: flex;
@@ -9,6 +28,8 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+
+    margin: 0;
 
     /* font-family: "M PLUS 1", sans-serif; */
     font-family: "Hero", sans-serif;
@@ -23,8 +44,70 @@ body {
 
 @import url("https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@100;500;700&display=swap");
 
+.base-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.base-vert-flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 #title {
     margin-bottom: 2rem;
+}
+
+.day-icon-container {
+    gap: 1rem;
+}
+
+.precip-container,
+.temp-container {
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+/* .precip-container>div {
+    width: 25% !important;
+} */
+
+.current-temp-precip {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 0.25rem;
+}
+
+.current-weather-metadata {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.forecast-weather-metadata {
+    gap: 1rem;
+}
+
+.day-precip-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: column;
+}
+
+.day-icon-precip-container {
+    gap: 1rem;
+}
+
+.raindrop,
+.thermometer {
+    width: 1.25rem !important;
 }
 
 .searchAndAutofillContainer {
@@ -80,21 +163,40 @@ input[type="text"]::placeholder {
     margin-bottom: 50px;
 }
 
-#container {
-    display: none;
-    justify-content: center;
-    align-items: flex-start;
-    /* border-width: 3px;
-    border-color: white;
-    border-style: solid; */
+.current-day-container {
+    opacity: var(--day-opacity) !important;
 }
 
+.daily-forecast-container {
+    opacity: var(--day-opacity) !important;
+    gap: 1rem;
+}
+
+#container {
+    /* display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; */
+
+    /* align-items: flex-start; */
+    gap: 1em;
+
+    /* opacity: 0;
+    transform: scale(0); */
+    transition: all 200ms;
+}
+
+
+
 .day {
-    display: none;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    padding: 25px 0 25px 0;
+    gap: 1.5rem;
+
+    padding: var(--day-padding);
+
     border-width: 3px;
     background-color: rgba(216, 216, 216, 0.281);
     border-color: rgba(216, 216, 216, 0.616);
@@ -102,6 +204,8 @@ input[type="text"]::placeholder {
     border-style: solid;
     margin-left: 5px;
     margin-right: 5px;
+
+    transition: all 200ms;
 
     /* glassmorphism */
     /* background: rgba(255, 252, 252, 0.4);
@@ -117,18 +221,21 @@ input[type="text"]::placeholder {
     backdrop-filter: blur(8.2px);
     -webkit-backdrop-filter: blur(8.2px);
     border: 2px solid rgba(255, 255, 255, 0.25);
+
+    opacity: var(--day-opacity) !important;
 }
 
-.day div {
+/* .day div {
     display: flex;
     margin: 5px;
-}
+} */
 
 .loading {
-    height: 20px;
-    width: 20px;
+    width: 100%;
+    height: 100%;
 
-    opacity: 0.7;
+    z-index: 500;
+    opacity: 1;
     animation: skeleton-loading 1s linear infinite alternate;
 }
 
@@ -168,7 +275,9 @@ input[type="text"]::placeholder {
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(8.2px);
     -webkit-backdrop-filter: blur(8.2px);
-    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.25);
+    border-width: 0px;
     /* if sticking with above need to make border width 0 while hidden... */
 
     z-index: 500;
