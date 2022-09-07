@@ -77,6 +77,8 @@ const weatherIcons = {
   44: "./assets/mediumNightClouds.svg",
 };
 
+let minWeeklyTemp, maxWeeklyTemp;
+
 let cards_created = false;
 
 const d = new Date();
@@ -123,9 +125,11 @@ function shift_days() {
       current_forecast_days_indicies.push(
         days.indexOf(days[current_day + i - 7])
       );
+      days[current_day + i - 7].style.order = current_day + i;
     } else {
       current_forecast_days.push(days[current_day + i]);
       current_forecast_days_indicies.push(days.indexOf(days[current_day + i]));
+      days[current_day + i].style.order = current_day + i;
     }
   }
   return current_forecast_days;
@@ -238,11 +242,13 @@ async function renderAutofillResults() {
     );
   }
 
-  res_list.style.height = "350px";
+  res_list.style.height = "200px";
   res_list.style.borderWidth = "2px";
 }
 
 function startSkeletonAnimation() {
+  document.documentElement.style.setProperty("--container-opacities", 0);
+
   document.getElementById("current-day").className += " loading";
 
   for (const day of days) {
@@ -266,20 +272,133 @@ function startSkeletonAnimation() {
       }
 
       document.documentElement.style.setProperty("--container-opacities", 1);
+      calculateBackgroundGradientByTemps(minWeeklyTemp, maxWeeklyTemp);
     },
   });
 }
 
-// FINALLY A TIME TO USE THE "ORDER" ATTRIBUTE OF A FLEX CHILD
-// TO ORDER DAYS IN LOGICAL PATTERN
-// for example today is wed so wed is in middle
-// and then it would be thurs - sun in left to rigth order, so you would have to assing that
-// I would assume in shift_cards()? yea prob best bet
-
 // ALSO learn how to make easy custom scroll-bar, prob just tweak/use one that already exists
 
-function calculateBackgroundGradientByTemp() {
+// really like the glassmorphism on autofill results, see if it is already on the cards,
+// if not then make every glassmorphic element the same consistent style
+
+const mapTempsToColorRange = (number, fromRange, toRange) => {
+  return (
+    ((number - fromRange[0]) * (toRange[1] - toRange[0])) /
+      (fromRange[1] - fromRange[0]) +
+    toRange[0]
+  );
+};
+
+function calculateBackgroundGradientByTemps(minWeeklyTemp, maxWeeklyTemp) {
   // TODO:
+  //  <-40 - 0 : 240 (30L)
+  // 0 - 30 : 240 (50L)
+  // 30 - 50 : 180 - 240 (50L)
+  // 50 - 70 : 55-60 (50L)
+  // 70 - 80 : 40-55 (50L)
+  // 80 - 90: 20-40 (50L)
+  // 90- 100: 10-20 (50L)
+  // 100+ 0-10 (50L)
+
+  let coldestHSLValue, hottestHSLValue;
+
+  if (minWeeklyTemp <= -40) {
+    coldestHSLValue = "hsl(240 100% 20%)";
+  } else if (minWeeklyTemp > -40 && minWeeklyTemp <= 0) {
+    coldestHSLValue = "hsl(240 100% 30%)";
+  } else if (minWeeklyTemp > 0 && minWeeklyTemp <= 30) {
+    coldestHSLValue = "hsl(240 100% 50%)";
+  } else if (minWeeklyTemp > 30 && minWeeklyTemp <= 50) {
+    coldestHSLValue = `hsl(${mapTempsToColorRange(
+      minWeeklyTemp,
+      [30, 50],
+      [240, 180]
+    )} 100% 50%)`;
+  } else if (minWeeklyTemp > 50 && minWeeklyTemp <= 70) {
+    coldestHSLValue = `hsl(${mapTempsToColorRange(
+      minWeeklyTemp,
+      [50, 70],
+      [60, 55]
+    )} 100% 50%)`;
+  } else if (minWeeklyTemp > 70 && minWeeklyTemp <= 80) {
+    coldestHSLValue = `hsl(${mapTempsToColorRange(
+      minWeeklyTemp,
+      [70, 80],
+      [55, 40]
+    )} 100% 50%)`;
+  } else if (minWeeklyTemp > 80 && minWeeklyTemp <= 90) {
+    coldestHSLValue = `hsl(${mapTempsToColorRange(
+      minWeeklyTemp,
+      [80, 90],
+      [40, 20]
+    )} 100% 50%)`;
+  } else if (minWeeklyTemp > 90 && minWeeklyTemp <= 100) {
+    coldestHSLValue = `hsl(${mapTempsToColorRange(
+      minWeeklyTemp,
+      [90, 100],
+      [20, 10]
+    )} 100% 50%)`;
+  } else if (minWeeklyTemp > 100) {
+    coldestHSLValue = `hsl(${mapTempsToColorRange(
+      minWeeklyTemp,
+      [100, 130],
+      [10, 0]
+    )} 100% 50%)`;
+  }
+
+  if (maxWeeklyTemp <= -40) {
+    hottestHSLValue = "hsl(240 100% 20%)";
+  } else if (maxWeeklyTemp > -40 && maxWeeklyTemp <= 0) {
+    hottestHSLValue = "hsl(240 100% 30%)";
+  } else if (maxWeeklyTemp > 0 && maxWeeklyTemp <= 30) {
+    hottestHSLValue = "hsl(240 100% 50%)";
+  } else if (maxWeeklyTemp > 30 && maxWeeklyTemp <= 50) {
+    hottestHSLValue = `hsl(${mapTempsToColorRange(
+      maxWeeklyTemp,
+      [30, 50],
+      [240, 180]
+    )} 100% 50%)`;
+  } else if (maxWeeklyTemp > 50 && maxWeeklyTemp <= 70) {
+    hottestHSLValue = `hsl(${mapTempsToColorRange(
+      maxWeeklyTemp,
+      [50, 70],
+      [60, 55]
+    )} 100% 50%)`;
+  } else if (maxWeeklyTemp > 70 && maxWeeklyTemp <= 80) {
+    hottestHSLValue = `hsl(${mapTempsToColorRange(
+      maxWeeklyTemp,
+      [70, 80],
+      [55, 40]
+    )} 100% 50%)`;
+  } else if (maxWeeklyTemp > 80 && maxWeeklyTemp <= 90) {
+    hottestHSLValue = `hsl(${mapTempsToColorRange(
+      maxWeeklyTemp,
+      [80, 90],
+      [40, 20]
+    )} 100% 50%)`;
+  } else if (maxWeeklyTemp > 90 && maxWeeklyTemp <= 100) {
+    hottestHSLValue = `hsl(${mapTempsToColorRange(
+      maxWeeklyTemp,
+      [90, 100],
+      [20, 10]
+    )} 100% 50%)`;
+  } else if (maxWeeklyTemp > 100) {
+    hottestHSLValue = `hsl(${mapTempsToColorRange(
+      maxWeeklyTemp,
+      [100, 130],
+      [10, 0]
+    )} 100% 50%)`;
+  }
+
+  document.documentElement.style.setProperty(
+    "--background-coldest-gradient-color",
+    coldestHSLValue
+  );
+  document.documentElement.style.setProperty(
+    "--background-hottest-gradient-color",
+    hottestHSLValue
+  );
 }
 
 async function renderWeather(city_loc) {
@@ -314,6 +433,27 @@ async function renderWeather(city_loc) {
   clearSearchBar();
 
   let formatted_forecast = five_day_forecast["DailyForecasts"];
+
+  // getting and storing min/max temps for the week
+  minWeeklyTemp = Math.min(
+    ...[
+      formatted_forecast[0].Temperature.Minimum.Value,
+      formatted_forecast[1].Temperature.Minimum.Value,
+      formatted_forecast[2].Temperature.Minimum.Value,
+      formatted_forecast[3].Temperature.Minimum.Value,
+      formatted_forecast[4].Temperature.Minimum.Value,
+    ]
+  );
+
+  maxWeeklyTemp = Math.max(
+    ...[
+      formatted_forecast[0].Temperature.Maximum.Value,
+      formatted_forecast[1].Temperature.Maximum.Value,
+      formatted_forecast[2].Temperature.Maximum.Value,
+      formatted_forecast[3].Temperature.Maximum.Value,
+      formatted_forecast[4].Temperature.Maximum.Value,
+    ]
+  );
 
   setTimeout(() => {
     for (let i = 0; i < 5; i++) {

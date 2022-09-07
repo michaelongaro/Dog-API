@@ -7,6 +7,13 @@
     <title>Universal Forecast</title>
 
     <link rel="stylesheet" href="/style.css" />
+
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script> -->
+
     <script src="./node_modules/animejs/lib/anime.min.js"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"
@@ -40,11 +47,9 @@
     <div id="container" class="base-vert-flex">
       <div class="current-day-container base-flex">
         <div id="current-day" class="day" style="width: 10rem">
+          <div id="current-day-of-week"></div>
           <div class="day-icon-container base-flex">
-            <div class="day-precip-container">
-              <div id="current-day-of-week"></div>
-              <div id="weather-status-icon-7"></div>
-            </div>
+            <div id="weather-status-icon-7"></div>
 
             <div class="current-temp-precip">
               <div class="precip-container base-flex">
@@ -92,7 +97,7 @@
         <div id="sunday" class="day">
           <div class="day-icon-precip-container base-vert-flex">
             <div class="day-precip-container">
-              <div id="day-of-week">Sunday</div>
+              <div class="day-of-week">Sunday</div>
               <div id="weather-status-icon-0"></div>
             </div>
 
@@ -121,7 +126,7 @@
         <div id="monday" class="day">
           <div class="day-icon-precip-container base-vert-flex">
             <div class="day-precip-container">
-              <div id="day-of-week">Monday</div>
+              <div class="day-of-week">Monday</div>
               <div id="weather-status-icon-1"></div>
             </div>
 
@@ -150,7 +155,7 @@
         <div id="tuesday" class="day">
           <div class="day-icon-precip-container base-vert-flex">
             <div class="day-precip-container">
-              <div id="day-of-week">Tuesday</div>
+              <div class="day-of-week">Tuesday</div>
               <div id="weather-status-icon-2"></div>
             </div>
 
@@ -179,7 +184,7 @@
         <div id="wednesday" class="day">
           <div class="day-icon-precip-container base-vert-flex">
             <div class="day-precip-container">
-              <div id="day-of-week">Wednesday</div>
+              <div class="day-of-week">Wednesday</div>
               <div id="weather-status-icon-3"></div>
             </div>
 
@@ -208,7 +213,7 @@
         <div id="thursday" class="day">
           <div class="day-icon-precip-container base-vert-flex">
             <div class="day-precip-container">
-              <div id="day-of-week">Thursday</div>
+              <div class="day-of-week">Thursday</div>
               <div id="weather-status-icon-4"></div>
             </div>
 
@@ -237,7 +242,7 @@
         <div id="friday" class="day">
           <div class="day-icon-precip-container base-vert-flex">
             <div class="day-precip-container">
-              <div id="day-of-week">Friday</div>
+              <div class="day-of-week">Friday</div>
               <div id="weather-status-icon-5"></div>
             </div>
 
@@ -266,7 +271,7 @@
         <div id="saturday" class="day">
           <div class="day-icon-precip-container base-vert-flex">
             <div class="day-precip-container">
-              <div id="day-of-week">Saturday</div>
+              <div class="day-of-week">Saturday</div>
               <div id="weather-status-icon-6"></div>
             </div>
 
