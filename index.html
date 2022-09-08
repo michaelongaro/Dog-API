@@ -8,12 +8,6 @@
 
     <link rel="stylesheet" href="/style.css" />
 
-    <!-- <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script> -->
-
     <script src="./node_modules/animejs/lib/anime.min.js"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"
@@ -25,7 +19,14 @@
   <body>
     <h1 id="title">Universal Forecast</h1>
 
-    <div class="inputContainer">
+    <div class="input-container">
+      <button id="current-location-search" class="search-button">
+        <img
+          id="current-location-icon"
+          src="./assets/currentLocation.svg"
+          alt="Use current location"
+        />
+      </button>
       <div class="searchAndAutofillContainer">
         <input
           id="search"
@@ -37,8 +38,8 @@
         />
         <div id="result-list"></div>
       </div>
-      <button id="btnSearch" onclick="getAutofillResults();">
-        <img id="searchIcon" src="./assets/searchButton.svg" alt="Search" />
+      <button class="search-button">
+        <img id="search-icon" src="./assets/searchButton.svg" alt="Search" />
       </button>
     </div>
 

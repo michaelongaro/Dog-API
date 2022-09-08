@@ -8,6 +8,9 @@ const apiKey = "5A30FxiSCT46fzC7G35geCxlL0Xeuqwp";
 const cityName = document.getElementById("city");
 
 const search = document.getElementById("search");
+const current_location_search = document.getElementById(
+  "current-location-search"
+);
 const container = document.getElementById("container");
 const res_list = document.getElementById("result-list");
 
@@ -86,6 +89,9 @@ let current_day = d.getDay();
 let current_forecast_days = [];
 let current_forecast_days_indicies = [];
 
+let currentLongitude = null;
+let currentLatitude = null;
+
 window.addEventListener(
   "keyup",
   debounce((event) => {
@@ -104,6 +110,35 @@ window.addEventListener(
   }, 250),
   true
 );
+
+window.addEventListener(
+  "keydown",
+  debounce((event) => {
+    // should be able to i guess get .children or something on res_list
+    // and then change which one has focus? (along with blurring the rest)
+    // and then if pressing enter on given autfill result then maybe if you want
+    // tie it to pushing down and coming back up of ">" button
+    // "esc" would blur all autofill results + make height of res_list = 0;
+    //   if (
+    //     (event.which >= 65 && event.which <= 90) ||
+    //     event.code === "Backspace"
+    //   ) {
+    //     clearAutofillResults();
+    //     if (search.value === "") {
+    //       res_list.style.height = 0;
+    //       res_list.style.borderWidth = 0;
+    //     } else {
+    //       renderAutofillResults();
+    //     }
+    //   }
+    // }, 250),
+    // true
+  })
+);
+
+current_location_search.addEventListener("click", () => {
+  getCurrentCoordinates();
+});
 
 function clearAutofillResults() {
   while (res_list.firstChild) {
@@ -193,6 +228,37 @@ function debounce(cb, delay = 1000) {
   };
 }
 
+async function getCurrentLocation(latitude, longitude) {
+  console.log(
+    `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${apiKey}&q=${latitude}%2C%20${longitude}`
+  );
+  let location_finder_url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${apiKey}&q=${latitude}%2C%20${longitude}`;
+
+  try {
+    let res = await fetch(location_finder_url);
+
+    let res_value = res.clone();
+
+    // NEW PLAN!
+    // i am 99% sure that this res_value has the "Arden Hills" in there,
+    // you SHOULD be able to call below with whatever keys they have for this api:
+    // showCityName(
+    //   `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`
+    // );
+
+    // return await res.json();
+
+    // okay so once your api limit refreshes check and see if the basic 5day thing
+    // has "Arden Hills" anywhere in it, if it does you can call showCityName with the vals
+    // near top of renderWeather()
+    // if it doesn't, then you need to make call to getAu
+
+    renderWeather(res.json().Key);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 function currentHoursInTimezone(timeZoneStr) {
   return new Date(timeZoneStr).getHours();
 }
@@ -212,6 +278,13 @@ window.addEventListener("click", (e) => {
 
 async function renderAutofillResults() {
   let results = await getAutofillResults(search.value);
+
+  if (results === undefined) {
+    let autofillResult = document.createElement("div");
+    autofillResult.innerHTML = "No results found";
+    res_list.append(autofillResult);
+  }
+
   for (const result of results) {
     let autofillResult = document.createElement("div");
     autofillResult.innerHTML = `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`;
@@ -277,11 +350,6 @@ function startSkeletonAnimation() {
   });
 }
 
-// ALSO learn how to make easy custom scroll-bar, prob just tweak/use one that already exists
-
-// really like the glassmorphism on autofill results, see if it is already on the cards,
-// if not then make every glassmorphic element the same consistent style
-
 const mapTempsToColorRange = (number, fromRange, toRange) => {
   return (
     ((number - fromRange[0]) * (toRange[1] - toRange[0])) /
@@ -291,16 +359,6 @@ const mapTempsToColorRange = (number, fromRange, toRange) => {
 };
 
 function calculateBackgroundGradientByTemps(minWeeklyTemp, maxWeeklyTemp) {
-  // TODO:
-  //  <-40 - 0 : 240 (30L)
-  // 0 - 30 : 240 (50L)
-  // 30 - 50 : 180 - 240 (50L)
-  // 50 - 70 : 55-60 (50L)
-  // 70 - 80 : 40-55 (50L)
-  // 80 - 90: 20-40 (50L)
-  // 90- 100: 10-20 (50L)
-  // 100+ 0-10 (50L)
-
   let coldestHSLValue, hottestHSLValue;
 
   if (minWeeklyTemp <= -40) {
@@ -399,6 +457,34 @@ function calculateBackgroundGradientByTemps(minWeeklyTemp, maxWeeklyTemp) {
     "--background-hottest-gradient-color",
     hottestHSLValue
   );
+}
+
+function getCurrentCoordinates() {
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0,
+  };
+
+  function success(pos) {
+    currentLatitude = pos.coords.latitude;
+    currentLongitude = pos.coords.longitude;
+
+    console.log("calling this");
+    getCurrentLocation(currentLatitude, currentLongitude);
+
+    // console.log("Your current position is:");
+    // console.log(`Latitude : ${crd.latitude}`);
+    // console.log(`Longitude: ${crd.longitude}`);
+    // console.log(`More or less ${crd.accuracy} meters.`);
+  }
+
+  // maybe if user clicks deny search up how to force show "accept/deny" modal again?
+  function error(err) {
+    console.warn(`ERROR(${err.code}): ${err.message}`);
+  }
+
+  navigator.geolocation.getCurrentPosition(success, error, options);
 }
 
 async function renderWeather(city_loc) {
