@@ -3,14 +3,15 @@
 // dotenv.config();
 //process.env.WEATHER_API_KEY
 
-const apiKey = "5A30FxiSCT46fzC7G35geCxlL0Xeuqwp";
+const api_key = "5A30FxiSCT46fzC7G35geCxlL0Xeuqwp";
 
-const cityName = document.getElementById("city");
+const city_name = document.getElementById("city");
 
-const search = document.getElementById("search");
 const current_location_search = document.getElementById(
   "current-location-search"
 );
+const search = document.getElementById("search");
+const search_button = document.getElementById("search-button");
 const container = document.getElementById("container");
 const res_list = document.getElementById("result-list");
 
@@ -37,7 +38,7 @@ const days_str = [
   "Saturday",
 ];
 
-const weatherIcons = {
+const weather_icons = {
   1: "./assets/day.svg",
   2: "./assets/day.svg",
   3: "./assets/lightDayClouds.svg",
@@ -65,6 +66,8 @@ const weatherIcons = {
   27: "./assets/mediumSnow.svg",
   28: "./assets/mediumSnow.svg",
   29: "./assets/mediumSnow.svg",
+  30: "./assets/day.svg",
+  31: "./assets/day.svg",
   32: "./assets/lightDayClouds.svg",
   33: "./assets/night.svg",
   34: "./assets/lightNightClouds.svg",
@@ -80,7 +83,10 @@ const weatherIcons = {
   44: "./assets/mediumNightClouds.svg",
 };
 
-let minWeeklyTemp, maxWeeklyTemp;
+let min_weekly_temp, max_weekly_temp;
+
+let autofill_nav_index = -1;
+let autofill_results = [];
 
 let cards_created = false;
 
@@ -89,8 +95,8 @@ let current_day = d.getDay();
 let current_forecast_days = [];
 let current_forecast_days_indicies = [];
 
-let currentLongitude = null;
-let currentLatitude = null;
+let current_longitude = null;
+let current_latitude = null;
 
 window.addEventListener(
   "keyup",
@@ -109,31 +115,6 @@ window.addEventListener(
     }
   }, 250),
   true
-);
-
-window.addEventListener(
-  "keydown",
-  debounce((event) => {
-    // should be able to i guess get .children or something on res_list
-    // and then change which one has focus? (along with blurring the rest)
-    // and then if pressing enter on given autfill result then maybe if you want
-    // tie it to pushing down and coming back up of ">" button
-    // "esc" would blur all autofill results + make height of res_list = 0;
-    //   if (
-    //     (event.which >= 65 && event.which <= 90) ||
-    //     event.code === "Backspace"
-    //   ) {
-    //     clearAutofillResults();
-    //     if (search.value === "") {
-    //       res_list.style.height = 0;
-    //       res_list.style.borderWidth = 0;
-    //     } else {
-    //       renderAutofillResults();
-    //     }
-    //   }
-    // }, 250),
-    // true
-  })
 );
 
 current_location_search.addEventListener("click", () => {
@@ -173,15 +154,15 @@ function shift_days() {
 // probably a good convention to try to switch/follow is just changing classes instead
 // of adding these arbitrary-feeling styles all over...
 function showCityName(city) {
-  cityName.innerHTML = "";
+  city_name.innerHTML = "";
 
-  cityName.innerHTML = city;
-  cityName.style.display = "block";
-  cityName.style.fontSize = "20pt";
+  city_name.innerHTML = city;
+  city_name.style.display = "block";
+  city_name.style.fontSize = "20pt";
 }
 
 async function getAutofillResults(str) {
-  let autofill_url = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${apiKey}&q=${str}`;
+  let autofill_url = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${api_key}&q=${str}`;
 
   try {
     let res = await fetch(autofill_url);
@@ -194,7 +175,7 @@ async function getAutofillResults(str) {
 
 // getting min/max daily temps + rain % + wind
 async function getWeeklyWeather(city_loc) {
-  let forecast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=${apiKey}&details=true`;
+  let forecast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=${api_key}&details=true`;
 
   try {
     let res = await fetch(forecast_url);
@@ -207,7 +188,7 @@ async function getWeeklyWeather(city_loc) {
 
 // getting realFeel temp + humidity
 async function getCurrentConditions(city_loc) {
-  let forecast_url = `http://dataservice.accuweather.com/currentconditions/v1/${city_loc}?apikey=${apiKey}&details=true`;
+  let forecast_url = `http://dataservice.accuweather.com/currentconditions/v1/${city_loc}?apikey=${api_key}&details=true`;
 
   try {
     let res = await fetch(forecast_url);
@@ -230,30 +211,24 @@ function debounce(cb, delay = 1000) {
 
 async function getCurrentLocation(latitude, longitude) {
   console.log(
-    `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${apiKey}&q=${latitude}%2C%20${longitude}`
+    `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${api_key}&q=${latitude}%2C%20${longitude}`
   );
-  let location_finder_url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${apiKey}&q=${latitude}%2C%20${longitude}`;
+  let location_finder_url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${api_key}&q=${latitude}%2C%20${longitude}`;
 
   try {
     let res = await fetch(location_finder_url);
 
-    let res_value = res.clone();
+    let res_value = await res.clone().json();
 
-    // NEW PLAN!
-    // i am 99% sure that this res_value has the "Arden Hills" in there,
-    // you SHOULD be able to call below with whatever keys they have for this api:
-    // showCityName(
-    //   `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`
-    // );
+    showCityName(
+      `${res_value["LocalizedName"]}, ${res_value["AdministrativeArea"]["ID"]}`
+    );
 
     // return await res.json();
 
-    // okay so once your api limit refreshes check and see if the basic 5day thing
-    // has "Arden Hills" anywhere in it, if it does you can call showCityName with the vals
-    // near top of renderWeather()
-    // if it doesn't, then you need to make call to getAu
-
-    renderWeather(res.json().Key);
+    //maybe just do res_value.Key below?
+    // renderWeather(res.json().Key);
+    renderWeather(res_value.Key);
   } catch (error) {
     console.log(error);
   }
@@ -271,53 +246,122 @@ search.addEventListener("focus", () => {
 
 window.addEventListener("click", (e) => {
   if (!res_list.contains(e.target) && !search.contains(e.target)) {
-    res_list.style.height = 0;
-    res_list.style.borderWidth = 0;
+    resetAutofillNavigation();
   }
 });
 
 async function renderAutofillResults() {
-  let results = await getAutofillResults(search.value);
+  // let results = await getAutofillResults(search.value);
+  autofill_results = await getAutofillResults(search.value);
 
-  if (results === undefined) {
+  if (autofill_results === undefined) {
     let autofillResult = document.createElement("div");
     autofillResult.innerHTML = "No results found";
     res_list.append(autofillResult);
   }
+  res_list.style.height = "200px";
+  res_list.style.borderWidth = "2px";
+  autofill_nav_index = -1;
 
-  for (const result of results) {
+  for (const result of autofill_results) {
     let autofillResult = document.createElement("div");
+    autofillResult.setAttribute("tabIndex", "-1");
     autofillResult.innerHTML = `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`;
     res_list.append(autofillResult);
 
     autofillResult.addEventListener(
       "click",
       () => {
-        res_list.style.height = 0;
-        res_list.style.borderWidth = 0;
-        showCityName(
-          `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`
-        );
-        renderWeather(result["Key"]);
-      },
-      true
-    );
-
-    autofillResult.addEventListener(
-      "keyup",
-      (e) => {
-        if (e.code === "Enter") {
-          e.preventDefault();
-          autofillResult.click();
-        }
+        preRenderWeather(result);
       },
       true
     );
   }
 
-  res_list.style.height = "200px";
-  res_list.style.borderWidth = "2px";
+  window.addEventListener("keydown", handleKeyboardAutofillNavigation);
 }
+
+function handleKeyboardAutofillNavigation(e) {
+  console.log(autofill_results);
+
+  let num_autofill_results = document.querySelectorAll("#result-list > div");
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+
+    if (autofill_nav_index < num_autofill_results.length - 1) {
+      autofill_nav_index++;
+      for (const result of num_autofill_results) {
+        result.className = "";
+      }
+      num_autofill_results[autofill_nav_index].className =
+        "keyboard-navigated-autofill";
+      num_autofill_results[autofill_nav_index].focus();
+    }
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+
+    if (
+      autofill_nav_index > 0 &&
+      autofill_nav_index < num_autofill_results.length
+    ) {
+      autofill_nav_index--;
+      for (const result of num_autofill_results) {
+        result.className = "";
+      }
+      num_autofill_results[autofill_nav_index].className =
+        "keyboard-navigated-autofill";
+      num_autofill_results[autofill_nav_index].focus();
+    }
+  }
+
+  if (e.key === "Enter") {
+    e.preventDefault();
+
+    preRenderWeather(
+      autofill_results[autofill_nav_index === -1 ? 0 : autofill_nav_index]
+    );
+  }
+
+  if (e.key === "Escape") {
+    e.preventDefault();
+
+    resetAutofillNavigation();
+  }
+}
+
+function resetAutofillNavigation() {
+  let num_autofill_results = document.querySelectorAll("#result-list > div");
+  res_list.style.height = 0;
+  res_list.style.borderWidth = 0;
+  autofill_nav_index = -1;
+  for (const result of num_autofill_results) {
+    result.className = "";
+    result.blur();
+  }
+
+  window.removeEventListener("keydown", handleKeyboardAutofillNavigation);
+}
+
+// okay so ideal format is "LocalizedName",
+// parseInt(["AdministrativeArea"]["ID"]) === NaN ? ["AdministrativeArea"]["LocalizedName"],
+// ["Country"]["ID"]
+
+function preRenderWeather(result) {
+  console.log(result);
+  res_list.style.height = 0;
+  res_list.style.borderWidth = 0;
+  showCityName(
+    `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`
+  );
+  renderWeather(result["Key"]);
+}
+
+search_button.addEventListener("click", () => {
+  preRenderWeather(
+    autofill_results[autofill_nav_index === -1 ? 0 : autofill_nav_index]
+  );
+});
 
 function startSkeletonAnimation() {
   document.documentElement.style.setProperty("--container-opacities", 0);
@@ -333,7 +377,8 @@ function startSkeletonAnimation() {
     targets:
       "#current-day, #sunday, #monday, #tuesday, #wednesday, #thursday, #friday, #saturday",
     loop: 1,
-    translateY: [10, -10],
+    translateY: [15, -5],
+    scale: [1.1, 0.9, 1],
     rotateY: "360deg",
     direction: "alternate",
     duration: 2000,
@@ -345,7 +390,7 @@ function startSkeletonAnimation() {
       }
 
       document.documentElement.style.setProperty("--container-opacities", 1);
-      calculateBackgroundGradientByTemps(minWeeklyTemp, maxWeeklyTemp);
+      calculateBackgroundGradientByTemps(min_weekly_temp, max_weekly_temp);
     },
   });
 }
@@ -358,92 +403,92 @@ const mapTempsToColorRange = (number, fromRange, toRange) => {
   );
 };
 
-function calculateBackgroundGradientByTemps(minWeeklyTemp, maxWeeklyTemp) {
+function calculateBackgroundGradientByTemps(min_weekly_temp, max_weekly_temp) {
   let coldestHSLValue, hottestHSLValue;
 
-  if (minWeeklyTemp <= -40) {
+  if (min_weekly_temp <= -40) {
     coldestHSLValue = "hsl(240 100% 20%)";
-  } else if (minWeeklyTemp > -40 && minWeeklyTemp <= 0) {
+  } else if (min_weekly_temp > -40 && min_weekly_temp <= 0) {
     coldestHSLValue = "hsl(240 100% 30%)";
-  } else if (minWeeklyTemp > 0 && minWeeklyTemp <= 30) {
+  } else if (min_weekly_temp > 0 && min_weekly_temp <= 30) {
     coldestHSLValue = "hsl(240 100% 50%)";
-  } else if (minWeeklyTemp > 30 && minWeeklyTemp <= 50) {
+  } else if (min_weekly_temp > 30 && min_weekly_temp <= 50) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
-      minWeeklyTemp,
+      min_weekly_temp,
       [30, 50],
       [240, 180]
     )} 100% 50%)`;
-  } else if (minWeeklyTemp > 50 && minWeeklyTemp <= 70) {
+  } else if (min_weekly_temp > 50 && min_weekly_temp <= 70) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
-      minWeeklyTemp,
+      min_weekly_temp,
       [50, 70],
       [60, 55]
     )} 100% 50%)`;
-  } else if (minWeeklyTemp > 70 && minWeeklyTemp <= 80) {
+  } else if (min_weekly_temp > 70 && min_weekly_temp <= 80) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
-      minWeeklyTemp,
+      min_weekly_temp,
       [70, 80],
       [55, 40]
     )} 100% 50%)`;
-  } else if (minWeeklyTemp > 80 && minWeeklyTemp <= 90) {
+  } else if (min_weekly_temp > 80 && min_weekly_temp <= 90) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
-      minWeeklyTemp,
+      min_weekly_temp,
       [80, 90],
       [40, 20]
     )} 100% 50%)`;
-  } else if (minWeeklyTemp > 90 && minWeeklyTemp <= 100) {
+  } else if (min_weekly_temp > 90 && min_weekly_temp <= 100) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
-      minWeeklyTemp,
+      min_weekly_temp,
       [90, 100],
       [20, 10]
     )} 100% 50%)`;
-  } else if (minWeeklyTemp > 100) {
+  } else if (min_weekly_temp > 100) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
-      minWeeklyTemp,
+      min_weekly_temp,
       [100, 130],
       [10, 0]
     )} 100% 50%)`;
   }
 
-  if (maxWeeklyTemp <= -40) {
+  if (max_weekly_temp <= -40) {
     hottestHSLValue = "hsl(240 100% 20%)";
-  } else if (maxWeeklyTemp > -40 && maxWeeklyTemp <= 0) {
+  } else if (max_weekly_temp > -40 && max_weekly_temp <= 0) {
     hottestHSLValue = "hsl(240 100% 30%)";
-  } else if (maxWeeklyTemp > 0 && maxWeeklyTemp <= 30) {
+  } else if (max_weekly_temp > 0 && max_weekly_temp <= 30) {
     hottestHSLValue = "hsl(240 100% 50%)";
-  } else if (maxWeeklyTemp > 30 && maxWeeklyTemp <= 50) {
+  } else if (max_weekly_temp > 30 && max_weekly_temp <= 50) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
-      maxWeeklyTemp,
+      max_weekly_temp,
       [30, 50],
       [240, 180]
     )} 100% 50%)`;
-  } else if (maxWeeklyTemp > 50 && maxWeeklyTemp <= 70) {
+  } else if (max_weekly_temp > 50 && max_weekly_temp <= 70) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
-      maxWeeklyTemp,
+      max_weekly_temp,
       [50, 70],
       [60, 55]
     )} 100% 50%)`;
-  } else if (maxWeeklyTemp > 70 && maxWeeklyTemp <= 80) {
+  } else if (max_weekly_temp > 70 && max_weekly_temp <= 80) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
-      maxWeeklyTemp,
+      max_weekly_temp,
       [70, 80],
       [55, 40]
     )} 100% 50%)`;
-  } else if (maxWeeklyTemp > 80 && maxWeeklyTemp <= 90) {
+  } else if (max_weekly_temp > 80 && max_weekly_temp <= 90) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
-      maxWeeklyTemp,
+      max_weekly_temp,
       [80, 90],
       [40, 20]
     )} 100% 50%)`;
-  } else if (maxWeeklyTemp > 90 && maxWeeklyTemp <= 100) {
+  } else if (max_weekly_temp > 90 && max_weekly_temp <= 100) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
-      maxWeeklyTemp,
+      max_weekly_temp,
       [90, 100],
       [20, 10]
     )} 100% 50%)`;
-  } else if (maxWeeklyTemp > 100) {
+  } else if (max_weekly_temp > 100) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
-      maxWeeklyTemp,
+      max_weekly_temp,
       [100, 130],
       [10, 0]
     )} 100% 50%)`;
@@ -467,19 +512,12 @@ function getCurrentCoordinates() {
   };
 
   function success(pos) {
-    currentLatitude = pos.coords.latitude;
-    currentLongitude = pos.coords.longitude;
+    current_latitude = pos.coords.latitude;
+    current_longitude = pos.coords.longitude;
 
-    console.log("calling this");
-    getCurrentLocation(currentLatitude, currentLongitude);
-
-    // console.log("Your current position is:");
-    // console.log(`Latitude : ${crd.latitude}`);
-    // console.log(`Longitude: ${crd.longitude}`);
-    // console.log(`More or less ${crd.accuracy} meters.`);
+    getCurrentLocation(current_latitude, current_longitude);
   }
 
-  // maybe if user clicks deny search up how to force show "accept/deny" modal again?
   function error(err) {
     console.warn(`ERROR(${err.code}): ${err.message}`);
   }
@@ -494,7 +532,6 @@ async function renderWeather(city_loc) {
   }
 
   for (const day_index in days) {
-    console.log(day_index, current_day, day_index === current_day);
     if (
       !current_forecast_days_indicies.includes(parseInt(day_index)) ||
       parseInt(day_index) === current_day
@@ -521,7 +558,7 @@ async function renderWeather(city_loc) {
   let formatted_forecast = five_day_forecast["DailyForecasts"];
 
   // getting and storing min/max temps for the week
-  minWeeklyTemp = Math.min(
+  min_weekly_temp = Math.min(
     ...[
       formatted_forecast[0].Temperature.Minimum.Value,
       formatted_forecast[1].Temperature.Minimum.Value,
@@ -531,7 +568,7 @@ async function renderWeather(city_loc) {
     ]
   );
 
-  maxWeeklyTemp = Math.max(
+  max_weekly_temp = Math.max(
     ...[
       formatted_forecast[0].Temperature.Maximum.Value,
       formatted_forecast[1].Temperature.Maximum.Value,
@@ -555,7 +592,7 @@ async function renderWeather(city_loc) {
         document.getElementById(
           "weather-status-icon-7"
         ).innerHTML = `<img src=${
-          weatherIcons[formatted_forecast[i][morningOrEvening]["Icon"]]
+          weather_icons[formatted_forecast[i][morningOrEvening]["Icon"]]
         }>`;
 
         document.getElementById(
@@ -585,7 +622,7 @@ async function renderWeather(city_loc) {
         document.getElementById(
           `weather-status-icon-${current_forecast_days_indicies[i]}`
         ).innerHTML = `<img src=${
-          weatherIcons[formatted_forecast[i][morningOrEvening]["Icon"]]
+          weather_icons[formatted_forecast[i][morningOrEvening]["Icon"]]
         }>`;
 
         document.getElementById(

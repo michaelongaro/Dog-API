@@ -40,9 +40,13 @@
 }
 
 /* test this when api resets */
-/* * {
+* {
     transition: all 200ms;
-} */
+}
+
+:focus-visible {
+    outline: none !important;
+}
 
 #container * {
     opacity: var(--container-opacities);
@@ -92,6 +96,7 @@ body {
 
 #title {
     margin-bottom: 2rem;
+    text-shadow: 1px 1px 5px #00000059;
 }
 
 .day-icon-container {
@@ -140,7 +145,7 @@ body {
     width: 1.25rem !important;
 }
 
-.searchAndAutofillContainer {
+.search_autofill_container {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -176,8 +181,8 @@ input[type="text"]::placeholder {
 
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(8.2px);
-    -webkit-backdrop-filter: blur(8.2px);
+    /* backdrop-filter: blur(8.2px);
+    -webkit-backdrop-filter: blur(8.2px); */
     border: 2px solid rgba(255, 255, 255, 0.25);
 
     transition: all 200ms;
@@ -216,6 +221,7 @@ input[type="text"]::placeholder {
 .daily-forecast-container {
     opacity: var(--day-opacity) !important;
     gap: 1rem;
+    margin-bottom: 3rem;
 }
 
 .day-of-week,
@@ -267,8 +273,8 @@ input[type="text"]::placeholder {
     background: rgba(255, 255, 255, 0.35);
     border-radius: 16px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(8.2px);
-    -webkit-backdrop-filter: blur(8.2px);
+    /* backdrop-filter: blur(8.2px);
+    -webkit-backdrop-filter: blur(8.2px); */
     border: 2px solid rgba(255, 255, 255, 0.25);
 
     opacity: var(--day-opacity) !important;
@@ -316,8 +322,8 @@ input[type="text"]::placeholder {
     background: rgba(255, 255, 255, 0.35);
     border-radius: 6px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(8.2px);
-    -webkit-backdrop-filter: blur(8.2px);
+    /* backdrop-filter: blur(8.2px);
+    -webkit-backdrop-filter: blur(8.2px); */
     border-style: solid;
     border-color: rgba(255, 255, 255, 0.25);
     border-width: 0px;
@@ -334,8 +340,9 @@ input[type="text"]::placeholder {
     box-sizing: border-box;
 }
 
-#result-list div:hover {
-    background-color: rgba(179, 179, 179, 0.616);
+#result-list div:hover,
+.keyboard-navigated-autofill {
+    background-color: rgba(179, 179, 179, 0.60);
 }
 
 @-webkit-keyframes animatedBackgroundGradient {
@@ -387,5 +394,27 @@ input[type="text"]::placeholder {
 
     100% {
         background-color: hsla(204, 20%, 95%, 0.664);
+    }
+}
+
+
+@media (max-width: 700px) {
+    .daily-forecast-container {
+        flex-direction: column;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 445px) {
+    .search_autofill_container {
+        width: 65%;
+    }
+
+    #search {
+        width: 90%;
+    }
+
+    #result-list {
+        width: 200px;
     }
 }
