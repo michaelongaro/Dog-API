@@ -1,7 +1,5 @@
-// import dotenv from "./node_modules/dotenv/lib/dotenv";
-
-// dotenv.config();
-//process.env.WEATHER_API_KEY
+import anime from "animejs";
+// apparently was using lodash before but idk which method..
 
 const api_key = "5A30FxiSCT46fzC7G35geCxlL0Xeuqwp";
 
@@ -12,7 +10,7 @@ const current_location_search = document.getElementById(
 );
 const search = document.getElementById("search");
 const search_button = document.getElementById("search-button");
-const container = document.getElementById("container");
+// const container = document.getElementById("container");
 const res_list = document.getElementById("result-list");
 
 const monday = document.getElementById("monday");
@@ -23,9 +21,9 @@ const friday = document.getElementById("friday");
 const saturday = document.getElementById("saturday");
 const sunday = document.getElementById("sunday");
 
-let weather_status_icon;
-let high_temperature;
-let low_temperature;
+// let weather_status_icon;
+// let high_temperature;
+// let low_temperature;
 
 const days = [sunday, monday, tuesday, wednesday, thursday, friday, saturday];
 const days_str = [
@@ -39,48 +37,48 @@ const days_str = [
 ];
 
 const weather_icons = {
-  1: "./assets/day.svg",
-  2: "./assets/day.svg",
-  3: "./assets/lightDayClouds.svg",
-  4: "./assets/mediumDayClouds.svg",
-  5: "./assets/mediumDayClouds.svg",
-  6: "./assets/heavyDayClouds.svg",
-  7: "./assets/heavyDayClouds.svg",
-  8: "./assets/heavyDayClouds.svg",
-  11: "./assets/heavyDayClouds.svg",
-  12: "./assets/lightRain.svg",
-  13: "./assets/rainWithSun.svg",
-  14: "./assets/rainWithSun.svg",
-  15: "./assets/thunder.svg",
-  16: "./assets/rainWithSun.svg",
-  17: "./assets/rainWithSun.svg",
-  18: "./assets/heavyRain.svg",
-  19: "./assets/lightSnow.svg",
-  20: "./assets/lightSnow.svg",
-  21: "./assets/lightSnow.svg",
-  22: "./assets/heavySnow.svg",
-  23: "./assets/snowWithSun.svg",
-  24: "./assets/mediumSnow.svg",
-  25: "./assets/mediumSnow.svg",
-  26: "./assets/mediumSnow.svg",
-  27: "./assets/mediumSnow.svg",
-  28: "./assets/mediumSnow.svg",
-  29: "./assets/mediumSnow.svg",
-  30: "./assets/day.svg",
-  31: "./assets/day.svg",
-  32: "./assets/lightDayClouds.svg",
-  33: "./assets/night.svg",
-  34: "./assets/lightNightClouds.svg",
-  35: "./assets/lightNightClouds.svg",
-  36: "./assets/lightNightClouds.svg",
-  37: "./assets/mediumNightClouds.svg",
-  38: "./assets/heavyNightClouds.svg",
-  39: "./assets/mediumNightClouds.svg",
-  40: "./assets/mediumNightClouds.svg",
-  41: "./assets/mediumNightClouds.svg",
-  42: "./assets/mediumNightClouds.svg",
-  43: "./assets/mediumNightClouds.svg",
-  44: "./assets/mediumNightClouds.svg",
+  1: "../assets/day.svg",
+  2: "../assets/day.svg",
+  3: "../assets/lightDayClouds.svg",
+  4: "../assets/mediumDayClouds.svg",
+  5: "../assets/mediumDayClouds.svg",
+  6: "../assets/heavyDayClouds.svg",
+  7: "../assets/heavyDayClouds.svg",
+  8: "../assets/heavyDayClouds.svg",
+  11: "../assets/heavyDayClouds.svg",
+  12: "../assets/lightRain.svg",
+  13: "../assets/rainWithSun.svg",
+  14: "../assets/rainWithSun.svg",
+  15: "../assets/thunder.svg",
+  16: "../assets/rainWithSun.svg",
+  17: "../assets/rainWithSun.svg",
+  18: "../assets/heavyRain.svg",
+  19: "../assets/lightSnow.svg",
+  20: "../assets/lightSnow.svg",
+  21: "../assets/lightSnow.svg",
+  22: "../assets/heavySnow.svg",
+  23: "../assets/snowWithSun.svg",
+  24: "../assets/mediumSnow.svg",
+  25: "../assets/mediumSnow.svg",
+  26: "../assets/mediumSnow.svg",
+  27: "../assets/mediumSnow.svg",
+  28: "../assets/mediumSnow.svg",
+  29: "../assets/mediumSnow.svg",
+  30: "../assets/day.svg",
+  31: "../assets/day.svg",
+  32: "../assets/lightDayClouds.svg",
+  33: "../assets/night.svg",
+  34: "../assets/lightNightClouds.svg",
+  35: "../assets/lightNightClouds.svg",
+  36: "../assets/lightNightClouds.svg",
+  37: "../assets/mediumNightClouds.svg",
+  38: "../assets/heavyNightClouds.svg",
+  39: "../assets/mediumNightClouds.svg",
+  40: "../assets/mediumNightClouds.svg",
+  41: "../assets/mediumNightClouds.svg",
+  42: "../assets/mediumNightClouds.svg",
+  43: "../assets/mediumNightClouds.svg",
+  44: "../assets/mediumNightClouds.svg",
 };
 
 let min_weekly_temp, max_weekly_temp;

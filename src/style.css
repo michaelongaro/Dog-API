@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@100;500;700&display=swap");
+
 :root {
     --background-coldest-gradient-color: hsl(240 100% 50%);
     /* prob need a middle gradient color too */
@@ -12,7 +14,7 @@
 
 @font-face {
     font-family: "Hero";
-    src: url("./assets/Hero-Regular.ttf") format("truetype");
+    src: url("../assets/Hero-Regular.ttf") format("truetype");
 }
 
 /* Custom scrollbar for autofill*/
@@ -79,7 +81,6 @@ body {
     animation: animatedBackgroundGradient 13s ease infinite;
 }
 
-@import url("https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@100;500;700&display=swap");
 
 .base-flex {
     display: flex;
