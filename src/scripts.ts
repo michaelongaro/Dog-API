@@ -3,27 +3,49 @@ import anime from "animejs";
 
 const api_key = "5A30FxiSCT46fzC7G35geCxlL0Xeuqwp";
 
-const city_name = document.getElementById("city");
+const city_name = document.getElementById("city") as HTMLElement;
 
 const current_location_search = document.getElementById(
   "current-location-search"
-);
-const search = document.getElementById("search");
-const search_button = document.getElementById("search-button");
-// const container = document.getElementById("container");
-const res_list = document.getElementById("result-list");
+) as HTMLButtonElement;
+const search_button = document.getElementById(
+  "search-button"
+) as HTMLButtonElement;
 
-const monday = document.getElementById("monday");
-const tuesday = document.getElementById("tuesday");
-const wednesday = document.getElementById("wednesday");
-const thursday = document.getElementById("thursday");
-const friday = document.getElementById("friday");
-const saturday = document.getElementById("saturday");
-const sunday = document.getElementById("sunday");
+const search = document.getElementById("search") as HTMLInputElement;
+const res_list = document.getElementById("result-list") as HTMLElement;
 
-// let weather_status_icon;
-// let high_temperature;
-// let low_temperature;
+const current_day = document.getElementById("current-day") as HTMLElement;
+const monday = document.getElementById("monday") as HTMLElement;
+const tuesday = document.getElementById("tuesday") as HTMLElement;
+const wednesday = document.getElementById("wednesday") as HTMLElement;
+const thursday = document.getElementById("thursday") as HTMLElement;
+const friday = document.getElementById("friday") as HTMLElement;
+const saturday = document.getElementById("saturday") as HTMLElement;
+const sunday = document.getElementById("sunday") as HTMLElement;
+
+const current_day_of_week = document.getElementById(
+  "current-day-of-week"
+) as HTMLElement;
+const current_weather_icon = document.getElementById(
+  "weather-status-icon-7"
+) as HTMLElement;
+const current_precip_percent = document.getElementById(
+  "precip-percent-7"
+) as HTMLElement;
+const current_temp = document.getElementById(
+  "current-temperature"
+) as HTMLElement;
+const current_min_temp = document.getElementById(
+  "low-temperature-7"
+) as HTMLElement;
+const current_max_temp = document.getElementById(
+  "high-temperature-7"
+) as HTMLElement;
+const current_humidity = document.getElementById(
+  "current-humidity"
+) as HTMLElement;
+const current_wind = document.getElementById("wind-7") as HTMLElement;
 
 const days = [sunday, monday, tuesday, wednesday, thursday, friday, saturday];
 const days_str = [
@@ -81,36 +103,36 @@ const weather_icons = {
   44: "../assets/mediumNightClouds.svg",
 };
 
-let min_weekly_temp, max_weekly_temp;
+let min_weekly_temp: number, max_weekly_temp: number;
 
 let autofill_nav_index = -1;
-let autofill_results = [];
+let autofill_results: Object[] = [];
 
 let cards_created = false;
 
 const d = new Date();
-let current_day = d.getDay();
-let current_forecast_days = [];
-let current_forecast_days_indicies = [];
+let current_day_idx = d.getDay();
+// let current_forecast_days: HTMLElement[] = [];
+let current_forecast_days_indicies: number[] = [];
 
-let current_longitude = null;
-let current_latitude = null;
+let current_longitude: number | null = null;
+let current_latitude: number | null = null;
 
 window.addEventListener(
   "keyup",
-  debounce((event) => {
-    if (
-      (event.which >= 65 && event.which <= 90) ||
-      event.code === "Backspace"
-    ) {
-      clearAutofillResults();
-      if (search.value === "") {
-        res_list.style.height = 0;
-        res_list.style.borderWidth = 0;
-      } else {
-        renderAutofillResults();
-      }
+  debounce((event: KeyboardEvent) => {
+    // if (
+    //   (event.key >= 65 && event.key <= 90) ||
+    //   event.code === "Backspace"
+    // ) {
+    clearAutofillResults();
+    if (search.value === "") {
+      res_list.style.height = "0";
+      res_list.style.borderWidth = "0";
+    } else {
+      renderAutofillResults();
     }
+    // }
   }, 250),
   true
 );
@@ -120,8 +142,12 @@ current_location_search.addEventListener("click", () => {
 });
 
 function clearAutofillResults() {
-  while (res_list.firstChild) {
-    res_list.removeChild(res_list.lastChild);
+  // while (res_list.firstChild) {
+  //   res_list.removeChild(res_list.lastChild);
+  // }
+
+  for (const autofill_result of Array.from(res_list.children)) {
+    autofill_result.remove();
   }
 }
 
@@ -131,36 +157,38 @@ function clearSearchBar() {
 
 function shift_days() {
   for (let i = 0; i < 5; i++) {
-    if (current_day + i > 6) {
+    if (current_day_idx + i > 6) {
       // for this and below probably cleaner to be storing these into an obj
-      // where key is  days.indexOf(days[current_day + i - 7])
-      // and value is days[current_day + i - 7]
-      current_forecast_days.push(days[current_day + i - 7]);
+      // where key is  days.indexOf(days[current_day_idx + i - 7])
+      // and value is days[current_day_idx + i - 7]
+      // current_forecast_days.push(days[current_day_idx + i - 7]);
       current_forecast_days_indicies.push(
-        days.indexOf(days[current_day + i - 7])
+        days.indexOf(days[current_day_idx + i - 7])
       );
-      days[current_day + i - 7].style.order = current_day + i;
+      days[current_day_idx + i - 7].style.order = `${current_day_idx + i}`;
     } else {
-      current_forecast_days.push(days[current_day + i]);
-      current_forecast_days_indicies.push(days.indexOf(days[current_day + i]));
-      days[current_day + i].style.order = current_day + i;
+      // current_forecast_days.push(days[current_day_idx + i]);
+      current_forecast_days_indicies.push(
+        days.indexOf(days[current_day_idx + i])
+      );
+      days[current_day_idx + i].style.order = `${current_day_idx + i}`;
     }
   }
-  return current_forecast_days;
+  // return current_forecast_days;
 }
 
 // probably a good convention to try to switch/follow is just changing classes instead
 // of adding these arbitrary-feeling styles all over...
-function showCityName(city) {
+function showCityName(city: string) {
   city_name.innerHTML = "";
-
   city_name.innerHTML = city;
+
   city_name.style.display = "block";
   city_name.style.fontSize = "20pt";
 }
 
-async function getAutofillResults(str) {
-  let autofill_url = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${api_key}&q=${str}`;
+async function getAutofillResults(location: string) {
+  let autofill_url = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${api_key}&q=${location}`;
 
   try {
     let res = await fetch(autofill_url);
@@ -172,7 +200,7 @@ async function getAutofillResults(str) {
 }
 
 // getting min/max daily temps + rain % + wind
-async function getWeeklyWeather(city_loc) {
+async function getWeeklyWeather(city_loc: string) {
   let forecast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=${api_key}&details=true`;
 
   try {
@@ -185,7 +213,7 @@ async function getWeeklyWeather(city_loc) {
 }
 
 // getting realFeel temp + humidity
-async function getCurrentConditions(city_loc) {
+async function getCurrentConditions(city_loc: string) {
   let forecast_url = `http://dataservice.accuweather.com/currentconditions/v1/${city_loc}?apikey=${api_key}&details=true`;
 
   try {
@@ -197,9 +225,9 @@ async function getCurrentConditions(city_loc) {
   }
 }
 
-function debounce(cb, delay = 1000) {
-  let timeout;
-  return (...args) => {
+function debounce(cb: Function, delay = 1000) {
+  let timeout: number;
+  return (...args: any) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
       cb(...args);
@@ -207,10 +235,7 @@ function debounce(cb, delay = 1000) {
   };
 }
 
-async function getCurrentLocation(latitude, longitude) {
-  console.log(
-    `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${api_key}&q=${latitude}%2C%20${longitude}`
-  );
+async function getCurrentLocation(latitude: number, longitude: number) {
   let location_finder_url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${api_key}&q=${latitude}%2C%20${longitude}`;
 
   try {
@@ -222,18 +247,14 @@ async function getCurrentLocation(latitude, longitude) {
       `${res_value["LocalizedName"]}, ${res_value["AdministrativeArea"]["ID"]}`
     );
 
-    // return await res.json();
-
-    //maybe just do res_value.Key below?
-    // renderWeather(res.json().Key);
     renderWeather(res_value.Key);
   } catch (error) {
     console.log(error);
   }
 }
 
-function currentHoursInTimezone(timeZoneStr) {
-  return new Date(timeZoneStr).getHours();
+function currentHoursInTimezone(timeZone: string) {
+  return new Date(timeZone).getHours();
 }
 
 search.addEventListener("focus", () => {
@@ -242,11 +263,16 @@ search.addEventListener("focus", () => {
   }
 });
 
-window.addEventListener("click", (e) => {
-  if (!res_list.contains(e.target) && !search.contains(e.target)) {
+window.addEventListener("click", (e: MouseEvent) => {
+  let target = e.target as Node;
+  if (!res_list.contains(target) && !search.contains(target)) {
     resetAutofillNavigation();
   }
 });
+
+interface IAutofillResult {
+  LocalizedName: string;
+}
 
 async function renderAutofillResults() {
   // let results = await getAutofillResults(search.value);
@@ -261,10 +287,15 @@ async function renderAutofillResults() {
   res_list.style.borderWidth = "2px";
   autofill_nav_index = -1;
 
-  for (const result of autofill_results) {
+  let result: IAutofillResult;
+
+  // yea so how to type out the response (hopefully only the fields that we need,
+  // because there were like a bajillion that it returned...)
+
+  for (result of autofill_results) {
     let autofillResult = document.createElement("div");
     autofillResult.setAttribute("tabIndex", "-1");
-    autofillResult.innerHTML = `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`;
+    autofillResult.innerHTML = `${result.LocalizedName}, ${result["AdministrativeArea"]["ID"]}`;
     res_list.append(autofillResult);
 
     autofillResult.addEventListener(
@@ -279,9 +310,7 @@ async function renderAutofillResults() {
   window.addEventListener("keydown", handleKeyboardAutofillNavigation);
 }
 
-function handleKeyboardAutofillNavigation(e) {
-  console.log(autofill_results);
-
+function handleKeyboardAutofillNavigation(e: KeyboardEvent) {
   let num_autofill_results = document.querySelectorAll("#result-list > div");
 
   if (e.key === "ArrowDown") {
@@ -289,12 +318,12 @@ function handleKeyboardAutofillNavigation(e) {
 
     if (autofill_nav_index < num_autofill_results.length - 1) {
       autofill_nav_index++;
-      for (const result of num_autofill_results) {
+      for (const result of Array.from(num_autofill_results)) {
         result.className = "";
       }
       num_autofill_results[autofill_nav_index].className =
         "keyboard-navigated-autofill";
-      num_autofill_results[autofill_nav_index].focus();
+      (num_autofill_results[autofill_nav_index] as HTMLElement)?.focus();
     }
   } else if (e.key === "ArrowUp") {
     e.preventDefault();
@@ -304,12 +333,12 @@ function handleKeyboardAutofillNavigation(e) {
       autofill_nav_index < num_autofill_results.length
     ) {
       autofill_nav_index--;
-      for (const result of num_autofill_results) {
+      for (const result of Array.from(num_autofill_results)) {
         result.className = "";
       }
       num_autofill_results[autofill_nav_index].className =
         "keyboard-navigated-autofill";
-      num_autofill_results[autofill_nav_index].focus();
+      (num_autofill_results[autofill_nav_index] as HTMLElement)?.focus();
     }
   }
 
@@ -330,12 +359,12 @@ function handleKeyboardAutofillNavigation(e) {
 
 function resetAutofillNavigation() {
   let num_autofill_results = document.querySelectorAll("#result-list > div");
-  res_list.style.height = 0;
-  res_list.style.borderWidth = 0;
+  res_list.style.height = "0";
+  res_list.style.borderWidth = "0";
   autofill_nav_index = -1;
-  for (const result of num_autofill_results) {
+  for (const result of Array.from(num_autofill_results)) {
     result.className = "";
-    result.blur();
+    (result as HTMLElement)?.blur();
   }
 
   window.removeEventListener("keydown", handleKeyboardAutofillNavigation);
@@ -347,8 +376,8 @@ function resetAutofillNavigation() {
 
 function preRenderWeather(result) {
   console.log(result);
-  res_list.style.height = 0;
-  res_list.style.borderWidth = 0;
+  res_list.style.height = "0";
+  res_list.style.borderWidth = "0";
   showCityName(
     `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`
   );
@@ -362,9 +391,9 @@ search_button.addEventListener("click", () => {
 });
 
 function startSkeletonAnimation() {
-  document.documentElement.style.setProperty("--container-opacities", 0);
+  document.documentElement.style.setProperty("--container-opacities", "0");
 
-  document.getElementById("current-day").className += " loading";
+  current_day.className += " loading";
 
   for (const day of days) {
     day.className += " loading";
@@ -382,26 +411,33 @@ function startSkeletonAnimation() {
     duration: 2000,
     easing: "easeInSine",
     complete: () => {
-      document.getElementById("current-day").className = "day base-flex";
+      current_day.className = "day base-flex";
       for (const day of days) {
         day.className = "day";
       }
 
-      document.documentElement.style.setProperty("--container-opacities", 1);
+      document.documentElement.style.setProperty("--container-opacities", "1");
       calculateBackgroundGradientByTemps(min_weekly_temp, max_weekly_temp);
     },
   });
 }
 
-const mapTempsToColorRange = (number, fromRange, toRange) => {
+const mapTempsToColorRange = (
+  temp: number,
+  fromRange: number[],
+  toRange: number[]
+) => {
   return (
-    ((number - fromRange[0]) * (toRange[1] - toRange[0])) /
+    ((temp - fromRange[0]) * (toRange[1] - toRange[0])) /
       (fromRange[1] - fromRange[0]) +
     toRange[0]
   );
 };
 
-function calculateBackgroundGradientByTemps(min_weekly_temp, max_weekly_temp) {
+function calculateBackgroundGradientByTemps(
+  min_weekly_temp: number,
+  max_weekly_temp: number
+) {
   let coldestHSLValue, hottestHSLValue;
 
   if (min_weekly_temp <= -40) {
@@ -494,11 +530,11 @@ function calculateBackgroundGradientByTemps(min_weekly_temp, max_weekly_temp) {
 
   document.documentElement.style.setProperty(
     "--background-coldest-gradient-color",
-    coldestHSLValue
+    `${coldestHSLValue}`
   );
   document.documentElement.style.setProperty(
     "--background-hottest-gradient-color",
-    hottestHSLValue
+    `${hottestHSLValue}`
   );
 }
 
@@ -509,6 +545,7 @@ function getCurrentCoordinates() {
     maximumAge: 0,
   };
 
+  // another interface situation
   function success(pos) {
     current_latitude = pos.coords.latitude;
     current_longitude = pos.coords.longitude;
@@ -516,6 +553,7 @@ function getCurrentCoordinates() {
     getCurrentLocation(current_latitude, current_longitude);
   }
 
+  // prob same situation wtih interface
   function error(err) {
     console.warn(`ERROR(${err.code}): ${err.message}`);
   }
@@ -523,7 +561,7 @@ function getCurrentCoordinates() {
   navigator.geolocation.getCurrentPosition(success, error, options);
 }
 
-async function renderWeather(city_loc) {
+async function renderWeather(city_loc: string) {
   if (!cards_created) {
     shift_days();
     cards_created = true;
@@ -532,7 +570,7 @@ async function renderWeather(city_loc) {
   for (const day_index in days) {
     if (
       !current_forecast_days_indicies.includes(parseInt(day_index)) ||
-      parseInt(day_index) === current_day
+      parseInt(day_index) === current_day_idx
     ) {
       days[day_index].style.display = "none";
     }
@@ -583,57 +621,49 @@ async function renderWeather(city_loc) {
       );
       const morningOrEvening = currentHours < 21 ? "Day" : "Night";
 
+      // references to dynamic html elems
+      const forecast_weather_icon = document.getElementById(
+        `weather-status-icon-${current_forecast_days_indicies[i]}`
+      ) as HTMLElement;
+      const forecast_precip_percent = document.getElementById(
+        `precip-percent-${current_forecast_days_indicies[i]}`
+      ) as HTMLElement;
+      const forecast_min_temp = document.getElementById(
+        `low-temperature-${current_forecast_days_indicies[i]}`
+      ) as HTMLElement;
+      const forecast_max_temp = document.getElementById(
+        `high-temperature-${current_forecast_days_indicies[i]}`
+      ) as HTMLElement;
+
       if (i === 0) {
-        document.getElementById("current-day-of-week").innerHTML =
-          days_str[current_day];
+        current_day_of_week.innerHTML = days_str[current_day_idx];
 
-        document.getElementById(
-          "weather-status-icon-7"
-        ).innerHTML = `<img src=${
+        // hmm not sure if interface but I think something like it
+        current_weather_icon.innerHTML = `<img src=${
           weather_icons[formatted_forecast[i][morningOrEvening]["Icon"]]
         }>`;
 
-        document.getElementById(
-          "precip-percent-7"
-        ).innerHTML = `${formatted_forecast[i][morningOrEvening]["RainProbability"]}%`;
+        current_precip_percent.innerHTML = `${formatted_forecast[i][morningOrEvening]["RainProbability"]}%`;
 
-        document.getElementById(
-          "current-temperature"
-        ).innerHTML = `${current_conditions[0].Temperature.Imperial.Value}°F`;
+        current_temp.innerHTML = `${current_conditions[0].Temperature.Imperial.Value}°F`;
 
-        document.getElementById(
-          "low-temperature-7"
-        ).innerHTML = `${formatted_forecast[i].Temperature.Minimum.Value}°F`;
+        current_min_temp.innerHTML = `${formatted_forecast[i].Temperature.Minimum.Value}°F`;
 
-        document.getElementById(
-          "high-temperature-7"
-        ).innerHTML = `${formatted_forecast[i].Temperature.Maximum.Value}°F`;
+        current_max_temp.innerHTML = `${formatted_forecast[i].Temperature.Maximum.Value}°F`;
 
-        document.getElementById(
-          "current-humidity"
-        ).innerHTML = `${current_conditions[0].RelativeHumidity}%`;
+        current_humidity.innerHTML = `${current_conditions[0].RelativeHumidity}%`;
 
-        document.getElementById(
-          "wind-7"
-        ).innerHTML = `${formatted_forecast[i][morningOrEvening]["Wind"]["Speed"]["Value"]}mph`;
+        current_wind.innerHTML = `${formatted_forecast[i][morningOrEvening]["Wind"]["Speed"]["Value"]}mph`;
       } else {
-        document.getElementById(
-          `weather-status-icon-${current_forecast_days_indicies[i]}`
-        ).innerHTML = `<img src=${
+        forecast_weather_icon.innerHTML = `<img src=${
           weather_icons[formatted_forecast[i][morningOrEvening]["Icon"]]
         }>`;
 
-        document.getElementById(
-          `precip-percent-${current_forecast_days_indicies[i]}`
-        ).innerHTML = `${formatted_forecast[i][morningOrEvening]["RainProbability"]}%`;
+        forecast_precip_percent.innerHTML = `${formatted_forecast[i][morningOrEvening]["RainProbability"]}%`;
 
-        document.getElementById(
-          `low-temperature-${current_forecast_days_indicies[i]}`
-        ).innerHTML = `${formatted_forecast[i].Temperature.Minimum.Value}F`;
+        forecast_min_temp.innerHTML = `${formatted_forecast[i].Temperature.Minimum.Value}F`;
 
-        document.getElementById(
-          `high-temperature-${current_forecast_days_indicies[i]}`
-        ).innerHTML = `${formatted_forecast[i].Temperature.Maximum.Value}F`;
+        forecast_max_temp.innerHTML = `${formatted_forecast[i].Temperature.Maximum.Value}F`;
       }
     }
   }, 4100);
