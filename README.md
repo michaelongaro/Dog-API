@@ -9,7 +9,7 @@ default icons with animated ones.
 
 <!-- screenshot of homepage here -->
 
-![Screenshot of website](https://i.gyazo.com/514de4173276f3b07c811ec94849ec59.png)
+![Screenshot of website](https://i.gyazo.com/382d3be6d6c618551249f45c663e8c42.png)
 
 ## Available Scripts
 
