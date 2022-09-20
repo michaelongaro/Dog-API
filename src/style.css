@@ -288,7 +288,7 @@ input[type="text"]::placeholder {
 
 #temp-units-container button:hover,
 .toggled {
-    background: rgba(255, 255, 255, 0.55) !important;
+    background: rgba(255, 255, 255, 0.4) !important;
 }
 
 #fahrenheight-button {
