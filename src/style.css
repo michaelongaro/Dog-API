@@ -2,7 +2,6 @@
 
 :root {
     --background-coldest-gradient-color: hsl(240 100% 50%);
-    /* prob need a middle gradient color too */
     --background-hottest-gradient-color: hsl(0 100% 50%);
     --container-opacities: 0;
     --container-widths: 0;
@@ -10,6 +9,8 @@
     --container-user-select: none;
     --day-padding: 0;
     --day-opacity: 0;
+    --daily-forecast-container-margin-bottom: 0;
+    --temp-units-container-margin-bottom: 0;
 }
 
 @font-face {
@@ -95,8 +96,9 @@ body {
 }
 
 #title {
+    color: #ffffffe6;
+    text-shadow: 1px 1px 8px #000000;
     margin-bottom: 2rem;
-    text-shadow: 1px 1px 5px #00000059;
 }
 
 .day-icon-container {
@@ -215,6 +217,8 @@ input[type="text"]::placeholder {
     display: none;
     margin-top: 3rem;
     margin-bottom: 0.75rem;
+    color: #ffffffe6;
+    text-shadow: 1px 1px 5px #000000;
 }
 
 .current-day-container {
@@ -224,20 +228,18 @@ input[type="text"]::placeholder {
 .daily-forecast-container {
     opacity: var(--day-opacity) !important;
     gap: 1rem;
-    margin-bottom: 3rem;
+    margin-bottom: var(--daily-forecast-container-margin-bottom);
 }
 
 .day-of-week,
-#current-day-of-week {
-    text-align: center;
-    text-shadow: 0px 0px 1px #0000009c;
-}
-
+#current-day-of-week,
 .low-container>div:first-child,
 .high-container>div:first-child,
 #humidity-container>div:first-child,
 #wind-container>div:first-child {
-    text-shadow: 0px 0px 1px #0000007c;
+    /* color: #ffffffe6; */
+    color: #ffffff;
+    text-shadow: 1px 1px 3px #000000;
 }
 
 .low-container,
@@ -264,19 +266,18 @@ input[type="text"]::placeholder {
 
 #temp-units-container {
     width: 20% !important;
-    height: 100% !important;
-    margin-bottom: 2rem;
+    margin-bottom: var(--temp-units-container-margin-bottom);
+    pointer-events: none;
 }
 
 #temp-units-container button {
     padding: 1rem 1.5rem;
-    text-shadow: 0px 0px 1px #0000009c;
+    text-shadow: 0px 1px 3px #000000;
     cursor: pointer;
+    color: white;
 
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.18);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    /* backdrop-filter: blur(8.2px);
-    -webkit-backdrop-filter: blur(8.2px); */
     border: 2px solid rgba(255, 255, 255, 0.25);
     transition: all 200ms;
 
@@ -287,7 +288,7 @@ input[type="text"]::placeholder {
 
 #temp-units-container button:hover,
 .toggled {
-    background: rgba(255, 255, 255, 0.61) !important;
+    background: rgba(255, 255, 255, 0.55) !important;
 }
 
 #fahrenheight-button {
@@ -318,7 +319,7 @@ input[type="text"]::placeholder {
 
     transition: all 200ms;
 
-    background: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, .18);
     border-radius: 1rem;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     /* backdrop-filter: blur(8.2px);
@@ -326,6 +327,16 @@ input[type="text"]::placeholder {
     border: 2px solid rgba(255, 255, 255, 0.25);
 
     opacity: var(--day-opacity) !important;
+}
+
+.low-container>div:nth-child(2),
+.high-container>div:nth-child(2),
+.precip-container>div:first-child,
+#current-temperature,
+#current-humidity,
+#wind-7 {
+    color: white;
+    text-shadow: 1px 1px 3px #0000007d;
 }
 
 .loading {
@@ -346,6 +357,7 @@ input[type="text"]::placeholder {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 16px;
     box-shadow: 0 4px 30px rgb(0 0 0 / 10%);
+    text-align: center;
 }
 
 #result-list {
@@ -362,7 +374,7 @@ input[type="text"]::placeholder {
 
     width: 300px;
 
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.18);
     border-radius: 6px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(8.2px);
@@ -381,11 +393,14 @@ input[type="text"]::placeholder {
     width: 100%;
     padding: 5px;
     box-sizing: border-box;
+    color: white;
+    text-align: center;
+    text-shadow: 1px 1px 3px #0000007d;
 }
 
 #result-list div:hover,
 .keyboard-navigated-autofill {
-    background-color: rgba(179, 179, 179, 0.6);
+    background-color: rgb(0 0 0 / 60%);
 }
 
 @-webkit-keyframes animatedBackgroundGradient {
