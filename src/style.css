@@ -52,7 +52,7 @@
 
 #container * {
     opacity: var(--container-opacities);
-    width: var(--container-widths);
+    /* width: var(--container-widths); */
     height: var(--container-heights);
     user-select: var(--container-user-select);
     transition: all 200ms;
@@ -80,7 +80,6 @@ body {
     -moz-animation: animatedBackgroundGradient 13s ease infinite;
     animation: animatedBackgroundGradient 13s ease infinite;
 }
-
 
 .base-flex {
     display: flex;
@@ -110,10 +109,6 @@ body {
     gap: 0.5rem;
 }
 
-/* .precip-container>div {
-    width: 25% !important;
-} */
-
 .current-temp-precip {
     display: flex;
     align-items: flex-start;
@@ -135,6 +130,13 @@ body {
 .day-precip-container {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.day-precip-container div>img {
+    max-width: 5.5rem;
+    max-height: 5.5rem;
 }
 
 .day-icon-precip-container {
@@ -228,10 +230,18 @@ input[type="text"]::placeholder {
 .day-of-week,
 #current-day-of-week {
     text-align: center;
+    text-shadow: 0px 0px 1px #0000009c;
 }
 
-#low-container,
-#high-container,
+.low-container>div:first-child,
+.high-container>div:first-child,
+#humidity-container>div:first-child,
+#wind-container>div:first-child {
+    text-shadow: 0px 0px 1px #0000007c;
+}
+
+.low-container,
+.high-container,
 #humidity-container,
 #wind-container {
     height: fit-content;
@@ -252,18 +262,55 @@ input[type="text"]::placeholder {
     transition: all 200ms;
 }
 
+#temp-units-container {
+    width: 20% !important;
+    height: 100% !important;
+    margin-bottom: 2rem;
+}
+
+#temp-units-container button {
+    padding: 1rem 1.5rem;
+    text-shadow: 0px 0px 1px #0000009c;
+    cursor: pointer;
+
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    /* backdrop-filter: blur(8.2px);
+    -webkit-backdrop-filter: blur(8.2px); */
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    transition: all 200ms;
+
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 1 !important;
+}
+
+#temp-units-container button:hover,
+.toggled {
+    background: rgba(255, 255, 255, 0.61) !important;
+}
+
+#fahrenheight-button {
+    border-radius: 1rem 0 0 1rem;
+    border-right-width: 0.5px !important;
+}
+
+#celcius-button {
+    border-radius: 0 1rem 1rem 0;
+    border-left-width: 0.5px !important;
+}
+
 .day {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.5rem;
 
     padding: var(--day-padding);
 
     border-width: 3px;
-    background-color: rgba(216, 216, 216, 0.281);
-    border-color: rgba(216, 216, 216, 0.616);
+    border-color: rgba(216, 216, 216);
     border-radius: 5px;
     border-style: solid;
     margin-left: 5px;
@@ -271,8 +318,8 @@ input[type="text"]::placeholder {
 
     transition: all 200ms;
 
-    background: rgba(255, 255, 255, 0.35);
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 1rem;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     /* backdrop-filter: blur(8.2px);
     -webkit-backdrop-filter: blur(8.2px); */
@@ -280,11 +327,6 @@ input[type="text"]::placeholder {
 
     opacity: var(--day-opacity) !important;
 }
-
-/* .day div {
-    display: flex;
-    margin: 5px;
-} */
 
 .loading {
     width: 100%;
@@ -323,8 +365,8 @@ input[type="text"]::placeholder {
     background: rgba(255, 255, 255, 0.35);
     border-radius: 6px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    /* backdrop-filter: blur(8.2px);
-    -webkit-backdrop-filter: blur(8.2px); */
+    backdrop-filter: blur(8.2px);
+    -webkit-backdrop-filter: blur(8.2px);
     border-style: solid;
     border-color: rgba(255, 255, 255, 0.25);
     border-width: 0px;
@@ -343,7 +385,7 @@ input[type="text"]::placeholder {
 
 #result-list div:hover,
 .keyboard-navigated-autofill {
-    background-color: rgba(179, 179, 179, 0.60);
+    background-color: rgba(179, 179, 179, 0.6);
 }
 
 @-webkit-keyframes animatedBackgroundGradient {
@@ -397,7 +439,6 @@ input[type="text"]::placeholder {
         background-color: hsla(204, 20%, 95%, 0.664);
     }
 }
-
 
 @media (max-width: 700px) {
     .daily-forecast-container {
