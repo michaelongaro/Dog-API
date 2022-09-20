@@ -45,7 +45,10 @@
             <div id="weather-status-icon-7"></div>
 
             <div class="current-temp-precip">
-              <div class="precip-container base-flex">
+              <div
+                class="precip-container base-flex"
+                style="justify-content: space-between"
+              >
                 <div id="precip-percent-7"></div>
                 <img
                   src="./assets/raindrop.svg"
@@ -53,7 +56,10 @@
                   class="raindrop"
                 />
               </div>
-              <div class="temp-container base-flex">
+              <div
+                class="temp-container base-flex"
+                style="justify-content: space-between"
+              >
                 <div id="current-temperature"></div>
                 <img
                   src="./assets/thermometer.svg"
@@ -65,11 +71,11 @@
           </div>
 
           <div class="current-weather-metadata">
-            <div id="low-container">
+            <div class="low-container" style="height: 50%">
               <div>Low</div>
               <div id="low-temperature-7"></div>
             </div>
-            <div id="high-container">
+            <div class="high-container" style="height: 50%">
               <div>High</div>
               <div id="high-temperature-7"></div>
             </div>
@@ -105,11 +111,11 @@
           </div>
 
           <div class="forecast-weather-metadata base-flex">
-            <div id="low-container">
+            <div class="low-container">
               <div>Low</div>
               <div id="low-temperature-0"></div>
             </div>
-            <div id="high-container">
+            <div class="high-container">
               <div>High</div>
               <div id="high-temperature-0"></div>
             </div>
@@ -134,11 +140,11 @@
           </div>
 
           <div class="forecast-weather-metadata base-flex">
-            <div id="low-container">
+            <div class="low-container">
               <div>Low</div>
               <div id="low-temperature-1"></div>
             </div>
-            <div id="high-container">
+            <div class="high-container">
               <div>High</div>
               <div id="high-temperature-1"></div>
             </div>
@@ -163,11 +169,11 @@
           </div>
 
           <div class="forecast-weather-metadata base-flex">
-            <div id="low-container">
+            <div class="low-container">
               <div>Low</div>
               <div id="low-temperature-2"></div>
             </div>
-            <div id="high-container">
+            <div class="high-container">
               <div>High</div>
               <div id="high-temperature-2"></div>
             </div>
@@ -192,11 +198,11 @@
           </div>
 
           <div class="forecast-weather-metadata base-flex">
-            <div id="low-container">
+            <div class="low-container">
               <div>Low</div>
               <div id="low-temperature-3"></div>
             </div>
-            <div id="high-container">
+            <div class="high-container">
               <div>High</div>
               <div id="high-temperature-3"></div>
             </div>
@@ -221,11 +227,11 @@
           </div>
 
           <div class="forecast-weather-metadata base-flex">
-            <div id="low-container">
+            <div class="low-container">
               <div>Low</div>
               <div id="low-temperature-4"></div>
             </div>
-            <div id="high-container">
+            <div class="high-container">
               <div>High</div>
               <div id="high-temperature-4"></div>
             </div>
@@ -250,11 +256,11 @@
           </div>
 
           <div class="forecast-weather-metadata base-flex">
-            <div id="low-container">
+            <div class="low-container">
               <div>Low</div>
               <div id="low-temperature-5"></div>
             </div>
-            <div id="high-container">
+            <div class="high-container">
               <div>High</div>
               <div id="high-temperature-5"></div>
             </div>
@@ -279,16 +285,21 @@
           </div>
 
           <div class="forecast-weather-metadata base-flex">
-            <div id="low-container">
+            <div class="low-container">
               <div>Low</div>
               <div id="low-temperature-6"></div>
             </div>
-            <div id="high-container">
+            <div class="high-container">
               <div>High</div>
               <div id="high-temperature-6"></div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div id="temp-units-container" class="base-flex">
+        <button id="fahrenheight-button">F</button>
+        <button id="celcius-button">C</button>
       </div>
     </div>
 
