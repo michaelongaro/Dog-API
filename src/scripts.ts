@@ -1,6 +1,8 @@
 import anime from "animejs";
 // apparently was using lodash before but idk which method..
 
+import { weather_icons } from "./util/weather_icons";
+
 const api_key = "5A30FxiSCT46fzC7G35geCxlL0Xeuqwp";
 
 const city_name = document.getElementById("city") as HTMLElement;
@@ -23,6 +25,13 @@ const thursday = document.getElementById("thursday") as HTMLElement;
 const friday = document.getElementById("friday") as HTMLElement;
 const saturday = document.getElementById("saturday") as HTMLElement;
 const sunday = document.getElementById("sunday") as HTMLElement;
+
+const fahrenheight_toggle = document.getElementById(
+  "fahrenheight-button"
+) as HTMLButtonElement;
+const celcius_toggle = document.getElementById(
+  "celcius-button"
+) as HTMLButtonElement;
 
 const current_day_of_week = document.getElementById(
   "current-day-of-week"
@@ -58,73 +67,23 @@ const days_str = [
   "Saturday",
 ];
 
-const weather_icons = {
-  1: "../assets/day.svg",
-  2: "../assets/day.svg",
-  3: "../assets/lightDayClouds.svg",
-  4: "../assets/mediumDayClouds.svg",
-  5: "../assets/mediumDayClouds.svg",
-  6: "../assets/heavyDayClouds.svg",
-  7: "../assets/heavyDayClouds.svg",
-  8: "../assets/heavyDayClouds.svg",
-  11: "../assets/heavyDayClouds.svg",
-  12: "../assets/lightRain.svg",
-  13: "../assets/rainWithSun.svg",
-  14: "../assets/rainWithSun.svg",
-  15: "../assets/thunder.svg",
-  16: "../assets/rainWithSun.svg",
-  17: "../assets/rainWithSun.svg",
-  18: "../assets/heavyRain.svg",
-  19: "../assets/lightSnow.svg",
-  20: "../assets/lightSnow.svg",
-  21: "../assets/lightSnow.svg",
-  22: "../assets/heavySnow.svg",
-  23: "../assets/snowWithSun.svg",
-  24: "../assets/mediumSnow.svg",
-  25: "../assets/mediumSnow.svg",
-  26: "../assets/mediumSnow.svg",
-  27: "../assets/mediumSnow.svg",
-  28: "../assets/mediumSnow.svg",
-  29: "../assets/mediumSnow.svg",
-  30: "../assets/day.svg",
-  31: "../assets/day.svg",
-  32: "../assets/lightDayClouds.svg",
-  33: "../assets/night.svg",
-  34: "../assets/lightNightClouds.svg",
-  35: "../assets/lightNightClouds.svg",
-  36: "../assets/lightNightClouds.svg",
-  37: "../assets/mediumNightClouds.svg",
-  38: "../assets/heavyNightClouds.svg",
-  39: "../assets/mediumNightClouds.svg",
-  40: "../assets/mediumNightClouds.svg",
-  41: "../assets/mediumNightClouds.svg",
-  42: "../assets/mediumNightClouds.svg",
-  43: "../assets/mediumNightClouds.svg",
-  44: "../assets/mediumNightClouds.svg",
-};
-
 let min_weekly_temp: number, max_weekly_temp: number;
 
 let autofill_nav_index = -1;
-let autofill_results: Object[] = [];
+let autofill_results: IAutofillResults | undefined;
 
 let cards_created = false;
 
 const d = new Date();
 let current_day_idx = d.getDay();
-// let current_forecast_days: HTMLElement[] = [];
 let current_forecast_days_indicies: number[] = [];
 
-let current_longitude: number | null = null;
-let current_latitude: number | null = null;
+let current_longitude: number;
+let current_latitude: number;
 
-window.addEventListener(
+search.addEventListener(
   "keyup",
-  debounce((event: KeyboardEvent) => {
-    // if (
-    //   (event.key >= 65 && event.key <= 90) ||
-    //   event.code === "Backspace"
-    // ) {
+  debounce(() => {
     clearAutofillResults();
     if (search.value === "") {
       res_list.style.height = "0";
@@ -132,7 +91,6 @@ window.addEventListener(
     } else {
       renderAutofillResults();
     }
-    // }
   }, 250),
   true
 );
@@ -141,11 +99,15 @@ current_location_search.addEventListener("click", () => {
   getCurrentCoordinates();
 });
 
-function clearAutofillResults() {
-  // while (res_list.firstChild) {
-  //   res_list.removeChild(res_list.lastChild);
-  // }
+fahrenheight_toggle.addEventListener("click", () => {
+  changeTemperatureUnit(false);
+});
 
+celcius_toggle.addEventListener("click", () => {
+  changeTemperatureUnit(true);
+});
+
+function clearAutofillResults() {
   for (const autofill_result of Array.from(res_list.children)) {
     autofill_result.remove();
   }
@@ -272,30 +234,36 @@ window.addEventListener("click", (e: MouseEvent) => {
 
 interface IAutofillResult {
   LocalizedName: string;
+  AdministrativeArea: {
+    ID: string;
+    LocalizedName: string;
+  };
+  Country: {
+    ID: string;
+  };
+  Key: string;
 }
 
+interface IAutofillResults extends Array<IAutofillResult> {}
+
 async function renderAutofillResults() {
-  // let results = await getAutofillResults(search.value);
   autofill_results = await getAutofillResults(search.value);
+
+  res_list.style.height = "200px";
+  res_list.style.borderWidth = "2px";
+  autofill_nav_index = -1;
 
   if (autofill_results === undefined) {
     let autofillResult = document.createElement("div");
     autofillResult.innerHTML = "No results found";
     res_list.append(autofillResult);
+    return;
   }
-  res_list.style.height = "200px";
-  res_list.style.borderWidth = "2px";
-  autofill_nav_index = -1;
 
-  let result: IAutofillResult;
-
-  // yea so how to type out the response (hopefully only the fields that we need,
-  // because there were like a bajillion that it returned...)
-
-  for (result of autofill_results) {
+  for (const result of autofill_results) {
     let autofillResult = document.createElement("div");
     autofillResult.setAttribute("tabIndex", "-1");
-    autofillResult.innerHTML = `${result.LocalizedName}, ${result["AdministrativeArea"]["ID"]}`;
+    autofillResult.innerHTML = formatLocation(result);
     res_list.append(autofillResult);
 
     autofillResult.addEventListener(
@@ -329,31 +297,39 @@ function handleKeyboardAutofillNavigation(e: KeyboardEvent) {
     e.preventDefault();
 
     if (
-      autofill_nav_index > 0 &&
+      autofill_nav_index >= 0 &&
       autofill_nav_index < num_autofill_results.length
     ) {
       autofill_nav_index--;
-      for (const result of Array.from(num_autofill_results)) {
-        result.className = "";
+      if (autofill_nav_index !== -1) {
+        for (const result of Array.from(num_autofill_results)) {
+          result.className = "";
+        }
+        num_autofill_results[autofill_nav_index].className =
+          "keyboard-navigated-autofill";
+        (num_autofill_results[autofill_nav_index] as HTMLElement)?.focus();
       }
-      num_autofill_results[autofill_nav_index].className =
-        "keyboard-navigated-autofill";
-      (num_autofill_results[autofill_nav_index] as HTMLElement)?.focus();
     }
   }
 
   if (e.key === "Enter") {
     e.preventDefault();
 
-    preRenderWeather(
-      autofill_results[autofill_nav_index === -1 ? 0 : autofill_nav_index]
-    );
+    if (autofill_results) {
+      preRenderWeather(
+        autofill_results[autofill_nav_index === -1 ? 0 : autofill_nav_index]
+      );
+    }
   }
 
   if (e.key === "Escape") {
     e.preventDefault();
 
     resetAutofillNavigation();
+  }
+
+  if (autofill_nav_index === -1) {
+    search.focus();
   }
 }
 
@@ -370,25 +346,86 @@ function resetAutofillNavigation() {
   window.removeEventListener("keydown", handleKeyboardAutofillNavigation);
 }
 
-// okay so ideal format is "LocalizedName",
-// parseInt(["AdministrativeArea"]["ID"]) === NaN ? ["AdministrativeArea"]["LocalizedName"],
-// ["Country"]["ID"]
-
-function preRenderWeather(result) {
-  console.log(result);
+function preRenderWeather(result: IAutofillResult) {
   res_list.style.height = "0";
   res_list.style.borderWidth = "0";
-  showCityName(
-    `${result["LocalizedName"]}, ${result["AdministrativeArea"]["ID"]}`
-  );
+
+  showCityName(formatLocation(result));
   renderWeather(result["Key"]);
 }
 
+function formatLocation(location: IAutofillResult) {
+  let broader_location: string;
+
+  if (parseInt(location["AdministrativeArea"]["ID"]) !== NaN) {
+    broader_location = `${location["AdministrativeArea"]["LocalizedName"]}, ${location["Country"]["ID"]}`;
+  } else {
+    broader_location = location["AdministrativeArea"]["ID"];
+  }
+
+  const formattedLocation = `${location["LocalizedName"]}, ${broader_location}`;
+
+  return formattedLocation;
+}
+
 search_button.addEventListener("click", () => {
-  preRenderWeather(
-    autofill_results[autofill_nav_index === -1 ? 0 : autofill_nav_index]
-  );
+  if (autofill_results) {
+    preRenderWeather(
+      autofill_results[autofill_nav_index === -1 ? 0 : autofill_nav_index]
+    );
+  }
 });
+
+function changeTemperatureUnit(convertToCelcius: boolean) {
+  for (let i = 0; i < 7; i++) {
+    const low_temp = document.getElementById(`low-temperature-${i}`)?.innerHTML;
+    const high_temp = document.getElementById(
+      `high-temperature-${i}`
+    )?.innerHTML;
+
+    if (low_temp && high_temp) {
+      if (convertToCelcius) {
+        document.getElementById(
+          `low-temperature-${i}`
+        )!.innerHTML = `${Math.round((5 / 9) * (parseInt(low_temp) - 32))}°C`;
+        document.getElementById(
+          `high-temperature-${i}`
+        )!.innerHTML = `${Math.round((5 / 9) * (parseInt(high_temp) - 32))}°C`;
+      } else {
+        document.getElementById(
+          `low-temperature-${i}`
+        )!.innerHTML = `${Math.round((9 / 5) * parseInt(low_temp) + 32)}°F`;
+        document.getElementById(
+          `high-temperature-${i}`
+        )!.innerHTML = `${Math.round((9 / 5) * parseInt(high_temp) + 32)}°F`;
+      }
+    }
+  }
+
+  const current_temp = document.getElementById(
+    "current-temperature"
+  )?.innerHTML;
+
+  if (current_temp) {
+    if (convertToCelcius) {
+      document.getElementById("current-temperature")!.innerHTML = `${Math.round(
+        (5 / 9) * (parseInt(current_temp) - 32)
+      )}°C`;
+    } else {
+      document.getElementById("current-temperature")!.innerHTML = `${Math.round(
+        (9 / 5) * parseInt(current_temp) + 32
+      )}°F`;
+    }
+  }
+
+  if (convertToCelcius) {
+    fahrenheight_toggle.className = "";
+    celcius_toggle.className = "toggled";
+  } else {
+    fahrenheight_toggle.className = "toggled";
+    celcius_toggle.className = "";
+  }
+}
 
 function startSkeletonAnimation() {
   document.documentElement.style.setProperty("--container-opacities", "0");
@@ -399,12 +436,11 @@ function startSkeletonAnimation() {
     day.className += " loading";
   }
 
-  console.log("started animejs");
   anime({
     targets:
       "#current-day, #sunday, #monday, #tuesday, #wednesday, #thursday, #friday, #saturday",
     loop: 1,
-    translateY: [15, -5],
+    translateY: [10, -5],
     scale: [1.1, 0.9, 1],
     rotateY: "360deg",
     direction: "alternate",
@@ -418,6 +454,9 @@ function startSkeletonAnimation() {
 
       document.documentElement.style.setProperty("--container-opacities", "1");
       calculateBackgroundGradientByTemps(min_weekly_temp, max_weekly_temp);
+
+      fahrenheight_toggle.className = "toggled";
+      celcius_toggle.className = "";
     },
   });
 }
@@ -434,6 +473,7 @@ const mapTempsToColorRange = (
   );
 };
 
+// extract to separate file
 function calculateBackgroundGradientByTemps(
   min_weekly_temp: number,
   max_weekly_temp: number
@@ -545,16 +585,14 @@ function getCurrentCoordinates() {
     maximumAge: 0,
   };
 
-  // another interface situation
-  function success(pos) {
+  function success(pos: GeolocationPosition) {
     current_latitude = pos.coords.latitude;
     current_longitude = pos.coords.longitude;
 
     getCurrentLocation(current_latitude, current_longitude);
   }
 
-  // prob same situation wtih interface
-  function error(err) {
+  function error(err: GeolocationPositionError) {
     console.warn(`ERROR(${err.code}): ${err.message}`);
   }
 
@@ -580,7 +618,7 @@ async function renderWeather(city_loc: string) {
   document.documentElement.style.setProperty("--container-widths", "100%");
   document.documentElement.style.setProperty("--container-heights", "100%");
   document.documentElement.style.setProperty("--container-user-select", "auto");
-  document.documentElement.style.setProperty("--day-padding", "1.5rem");
+  document.documentElement.style.setProperty("--day-padding", "1.75rem");
   document.documentElement.style.setProperty("--day-opacity", "1");
 
   startSkeletonAnimation();
@@ -638,7 +676,6 @@ async function renderWeather(city_loc: string) {
       if (i === 0) {
         current_day_of_week.innerHTML = days_str[current_day_idx];
 
-        // hmm not sure if interface but I think something like it
         current_weather_icon.innerHTML = `<img src=${
           weather_icons[formatted_forecast[i][morningOrEvening]["Icon"]]
         }>`;
@@ -661,9 +698,9 @@ async function renderWeather(city_loc: string) {
 
         forecast_precip_percent.innerHTML = `${formatted_forecast[i][morningOrEvening]["RainProbability"]}%`;
 
-        forecast_min_temp.innerHTML = `${formatted_forecast[i].Temperature.Minimum.Value}F`;
+        forecast_min_temp.innerHTML = `${formatted_forecast[i].Temperature.Minimum.Value}°F`;
 
-        forecast_max_temp.innerHTML = `${formatted_forecast[i].Temperature.Maximum.Value}F`;
+        forecast_max_temp.innerHTML = `${formatted_forecast[i].Temperature.Maximum.Value}°F`;
       }
     }
   }, 4100);
