@@ -1,5 +1,4 @@
 import anime from "animejs";
-// apparently was using lodash before but idk which method..
 
 import { weather_icons } from "./util/weather_icons";
 
