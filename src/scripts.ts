@@ -366,11 +366,7 @@ function preRenderWeather(result: IAutofillResult) {
 function formatLocation(location: IAutofillResult) {
   let broader_location: string;
 
-  if (parseInt(location["AdministrativeArea"]["ID"]) !== NaN) {
-    broader_location = `${location["AdministrativeArea"]["LocalizedName"]}, ${location["Country"]["ID"]}`;
-  } else {
-    broader_location = location["AdministrativeArea"]["ID"];
-  }
+  broader_location = `${location["AdministrativeArea"]["LocalizedName"]}, ${location["Country"]["ID"]}`;
 
   const formattedLocation = `${location["LocalizedName"]}, ${broader_location}`;
 
