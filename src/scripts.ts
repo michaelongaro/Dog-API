@@ -25,6 +25,9 @@ const friday = document.getElementById("friday") as HTMLElement;
 const saturday = document.getElementById("saturday") as HTMLElement;
 const sunday = document.getElementById("sunday") as HTMLElement;
 
+const temp_units_container = document.getElementById(
+  "temp-units-container"
+) as HTMLElement;
 const fahrenheight_toggle = document.getElementById(
   "fahrenheight-button"
 ) as HTMLButtonElement;
@@ -248,14 +251,19 @@ interface IAutofillResults extends Array<IAutofillResult> {}
 async function renderAutofillResults() {
   autofill_results = await getAutofillResults(search.value);
 
-  res_list.style.height = "200px";
+  if (!autofill_results) {
+    return;
+  }
+
   res_list.style.borderWidth = "2px";
   autofill_nav_index = -1;
 
-  if (autofill_results === undefined) {
+  if (autofill_results.length === 0) {
     let autofillResult = document.createElement("div");
     autofillResult.innerHTML = "No results found";
+    autofillResult.style.pointerEvents = "none";
     res_list.append(autofillResult);
+    res_list.style.height = "35px";
     return;
   }
 
@@ -273,6 +281,8 @@ async function renderAutofillResults() {
       true
     );
   }
+
+  res_list.style.height = "200px";
 
   window.addEventListener("keydown", handleKeyboardAutofillNavigation);
 }
@@ -454,6 +464,7 @@ function startSkeletonAnimation() {
       document.documentElement.style.setProperty("--container-opacities", "1");
       calculateBackgroundGradientByTemps(min_weekly_temp, max_weekly_temp);
 
+      temp_units_container.style.pointerEvents = "auto";
       fahrenheight_toggle.className = "toggled";
       celcius_toggle.className = "";
     },
@@ -619,6 +630,14 @@ async function renderWeather(city_loc: string) {
   document.documentElement.style.setProperty("--container-user-select", "auto");
   document.documentElement.style.setProperty("--day-padding", "1.75rem");
   document.documentElement.style.setProperty("--day-opacity", "1");
+  document.documentElement.style.setProperty(
+    "--daily-forecast-container-margin-bottom",
+    "3rem"
+  );
+  document.documentElement.style.setProperty(
+    "--temp-units-container-margin-bottom",
+    "2rem"
+  );
 
   startSkeletonAnimation();
 
