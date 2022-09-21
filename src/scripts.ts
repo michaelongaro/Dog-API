@@ -2,7 +2,7 @@ import anime from "animejs";
 
 import { weather_icons } from "./util/weather_icons";
 
-const api_key = "5A30FxiSCT46fzC7G35geCxlL0Xeuqwp";
+const api_key = import.meta.env.VITE_API_KEY;
 
 const city_name = document.getElementById("city") as HTMLElement;
 
