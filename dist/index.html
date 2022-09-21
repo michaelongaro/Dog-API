@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Universal Forecast</title>
+
+    
+    <script type="module" crossorigin src="/UniversalForecast/assets/index.f0fc4bed.js"></script>
+    <link rel="stylesheet" href="/UniversalForecast/assets/index.e423dd38.css">
+  </head>
+  <body>
+    <h1 id="title">Universal Forecast</h1>
+
+    <div class="input-container">
+      <button id="current-location-search" class="search-button">
+        <img
+          id="current-location-icon"
+          src="/UniversalForecast/assets/currentLocation.a7b73d92.svg"
+          alt="Use current location"
+        />
+      </button>
+      <div class="search_autofill_container">
+        <input
+          id="search"
+          type="text"
+          name="search-bar"
+          placeholder="Enter city here..."
+          size="30"
+          required
+        />
+        <div id="result-list"></div>
+      </div>
+      <button id="search-button" class="search-button">
+        <img id="search-icon" src="/UniversalForecast/assets/searchButton.1330b2e7.svg" alt="Search" />
+      </button>
+    </div>
+
+    <div id="city"></div>
+
+    <div id="container" class="base-vert-flex">
+      <div class="current-day-container base-flex">
+        <div id="current-day" class="day" style="width: 10rem">
+          <div id="current-day-of-week"></div>
+          <div class="day-icon-container base-flex">
+            <div id="weather-status-icon-7"></div>
+
+            <div class="current-temp-precip">
+              <div
+                class="precip-container base-flex"
+                style="justify-content: space-between"
+              >
+                <div id="precip-percent-7"></div>
+                <img
+                  src="/UniversalForecast/assets/raindrop.0fa4c036.svg"
+                  alt="raindrop"
+                  class="raindrop"
+                />
+              </div>
+              <div
+                class="temp-container base-flex"
+                style="justify-content: space-between"
+              >
+                <div id="current-temperature"></div>
+                <img
+                  src="/UniversalForecast/assets/thermometer.aa813523.svg"
+                  alt="thermometer"
+                  class="thermometer"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="current-weather-metadata">
+            <div class="low-container" style="height: 50%">
+              <div>Low</div>
+              <div id="low-temperature-7"></div>
+            </div>
+            <div class="high-container" style="height: 50%">
+              <div>High</div>
+              <div id="high-temperature-7"></div>
+            </div>
+
+            <div id="humidity-container">
+              <div>Humidity</div>
+              <div id="current-humidity"></div>
+            </div>
+            <div id="wind-container">
+              <div>Wind</div>
+              <div id="wind-7"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="daily-forecast-container base-flex">
+        <div id="sunday" class="day">
+          <div class="day-icon-precip-container base-vert-flex">
+            <div class="day-precip-container">
+              <div class="day-of-week">Sunday</div>
+              <div id="weather-status-icon-0"></div>
+            </div>
+
+            <div class="precip-container base-flex">
+              <div id="precip-percent-0"></div>
+              <img
+                src="/UniversalForecast/assets/raindrop.0fa4c036.svg"
+                alt="raindrop"
+                class="raindrop"
+              />
+            </div>
+          </div>
+
+          <div class="forecast-weather-metadata base-flex">
+            <div class="low-container">
+              <div>Low</div>
+              <div id="low-temperature-0"></div>
+            </div>
+            <div class="high-container">
+              <div>High</div>
+              <div id="high-temperature-0"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="monday" class="day">
+          <div class="day-icon-precip-container base-vert-flex">
+            <div class="day-precip-container">
+              <div class="day-of-week">Monday</div>
+              <div id="weather-status-icon-1"></div>
+            </div>
+
+            <div class="precip-container base-flex">
+              <div id="precip-percent-1"></div>
+              <img
+                src="/UniversalForecast/assets/raindrop.0fa4c036.svg"
+                alt="raindrop"
+                class="raindrop"
+              />
+            </div>
+          </div>
+
+          <div class="forecast-weather-metadata base-flex">
+            <div class="low-container">
+              <div>Low</div>
+              <div id="low-temperature-1"></div>
+            </div>
+            <div class="high-container">
+              <div>High</div>
+              <div id="high-temperature-1"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tuesday" class="day">
+          <div class="day-icon-precip-container base-vert-flex">
+            <div class="day-precip-container">
+              <div class="day-of-week">Tuesday</div>
+              <div id="weather-status-icon-2"></div>
+            </div>
+
+            <div class="precip-container base-flex">
+              <div id="precip-percent-2"></div>
+              <img
+                src="/UniversalForecast/assets/raindrop.0fa4c036.svg"
+                alt="raindrop"
+                class="raindrop"
+              />
+            </div>
+          </div>
+
+          <div class="forecast-weather-metadata base-flex">
+            <div class="low-container">
+              <div>Low</div>
+              <div id="low-temperature-2"></div>
+            </div>
+            <div class="high-container">
+              <div>High</div>
+              <div id="high-temperature-2"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="wednesday" class="day">
+          <div class="day-icon-precip-container base-vert-flex">
+            <div class="day-precip-container">
+              <div class="day-of-week">Wednesday</div>
+              <div id="weather-status-icon-3"></div>
+            </div>
+
+            <div class="precip-container base-flex">
+              <div id="precip-percent-3"></div>
+              <img
+                src="/UniversalForecast/assets/raindrop.0fa4c036.svg"
+                alt="raindrop"
+                class="raindrop"
+              />
+            </div>
+          </div>
+
+          <div class="forecast-weather-metadata base-flex">
+            <div class="low-container">
+              <div>Low</div>
+              <div id="low-temperature-3"></div>
+            </div>
+            <div class="high-container">
+              <div>High</div>
+              <div id="high-temperature-3"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="thursday" class="day">
+          <div class="day-icon-precip-container base-vert-flex">
+            <div class="day-precip-container">
+              <div class="day-of-week">Thursday</div>
+              <div id="weather-status-icon-4"></div>
+            </div>
+
+            <div class="precip-container base-flex">
+              <div id="precip-percent-4"></div>
+              <img
+                src="/UniversalForecast/assets/raindrop.0fa4c036.svg"
+                alt="raindrop"
+                class="raindrop"
+              />
+            </div>
+          </div>
+
+          <div class="forecast-weather-metadata base-flex">
+            <div class="low-container">
+              <div>Low</div>
+              <div id="low-temperature-4"></div>
+            </div>
+            <div class="high-container">
+              <div>High</div>
+              <div id="high-temperature-4"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="friday" class="day">
+          <div class="day-icon-precip-container base-vert-flex">
+            <div class="day-precip-container">
+              <div class="day-of-week">Friday</div>
+              <div id="weather-status-icon-5"></div>
+            </div>
+
+            <div class="precip-container base-flex">
+              <div id="precip-percent-5"></div>
+              <img
+                src="/UniversalForecast/assets/raindrop.0fa4c036.svg"
+                alt="raindrop"
+                class="raindrop"
+              />
+            </div>
+          </div>
+
+          <div class="forecast-weather-metadata base-flex">
+            <div class="low-container">
+              <div>Low</div>
+              <div id="low-temperature-5"></div>
+            </div>
+            <div class="high-container">
+              <div>High</div>
+              <div id="high-temperature-5"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="saturday" class="day">
+          <div class="day-icon-precip-container base-vert-flex">
+            <div class="day-precip-container">
+              <div class="day-of-week">Saturday</div>
+              <div id="weather-status-icon-6"></div>
+            </div>
+
+            <div class="precip-container base-flex">
+              <div id="precip-percent-6"></div>
+              <img
+                src="/UniversalForecast/assets/raindrop.0fa4c036.svg"
+                alt="raindrop"
+                class="raindrop"
+              />
+            </div>
+          </div>
+
+          <div class="forecast-weather-metadata base-flex">
+            <div class="low-container">
+              <div>Low</div>
+              <div id="low-temperature-6"></div>
+            </div>
+            <div class="high-container">
+              <div>High</div>
+              <div id="high-temperature-6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="temp-units-container" class="base-flex">
+        <button id="fahrenheight-button">F</button>
+        <button id="celcius-button">C</button>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
