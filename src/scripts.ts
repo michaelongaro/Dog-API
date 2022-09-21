@@ -152,7 +152,7 @@ function showCityName(city: string) {
 }
 
 async function getAutofillResults(location: string) {
-  let autofill_url = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${api_key}&q=${location}`;
+  let autofill_url = `https://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${api_key}&q=${location}`;
 
   try {
     let res = await fetch(autofill_url);
@@ -165,7 +165,7 @@ async function getAutofillResults(location: string) {
 
 // getting min/max daily temps + rain % + wind
 async function getWeeklyWeather(city_loc: string) {
-  let forecast_url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=${api_key}&details=true`;
+  let forecast_url = `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${city_loc}?apikey=${api_key}&details=true`;
 
   try {
     let res = await fetch(forecast_url);
@@ -178,7 +178,7 @@ async function getWeeklyWeather(city_loc: string) {
 
 // getting realFeel temp + humidity
 async function getCurrentConditions(city_loc: string) {
-  let forecast_url = `http://dataservice.accuweather.com/currentconditions/v1/${city_loc}?apikey=${api_key}&details=true`;
+  let forecast_url = `https://dataservice.accuweather.com/currentconditions/v1/${city_loc}?apikey=${api_key}&details=true`;
 
   try {
     let res = await fetch(forecast_url);
@@ -200,7 +200,7 @@ function debounce(cb: Function, delay = 1000) {
 }
 
 async function getCurrentLocation(latitude: number, longitude: number) {
-  let location_finder_url = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${api_key}&q=${latitude}%2C%20${longitude}`;
+  let location_finder_url = `https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${api_key}&q=${latitude}%2C%20${longitude}`;
 
   try {
     let res = await fetch(location_finder_url);
