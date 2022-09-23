@@ -4,7 +4,8 @@ import { weather_icons } from "./util/weather_icons";
 
 const api_key = import.meta.env.VITE_API_KEY;
 
-const city_name = document.getElementById("city") as HTMLElement;
+const container = document.getElementById("container") as HTMLDivElement;
+const city_name = document.getElementById("city") as HTMLDivElement;
 
 const current_location_search = document.getElementById(
   "current-location-search"
@@ -14,20 +15,20 @@ const search_button = document.getElementById(
 ) as HTMLButtonElement;
 
 const search = document.getElementById("search") as HTMLInputElement;
-const res_list = document.getElementById("result-list") as HTMLElement;
+const res_list = document.getElementById("result-list") as HTMLDivElement;
 
-const current_day = document.getElementById("current-day") as HTMLElement;
-const monday = document.getElementById("monday") as HTMLElement;
-const tuesday = document.getElementById("tuesday") as HTMLElement;
-const wednesday = document.getElementById("wednesday") as HTMLElement;
-const thursday = document.getElementById("thursday") as HTMLElement;
-const friday = document.getElementById("friday") as HTMLElement;
-const saturday = document.getElementById("saturday") as HTMLElement;
-const sunday = document.getElementById("sunday") as HTMLElement;
+const current_day = document.getElementById("current-day") as HTMLDivElement;
+const monday = document.getElementById("monday") as HTMLDivElement;
+const tuesday = document.getElementById("tuesday") as HTMLDivElement;
+const wednesday = document.getElementById("wednesday") as HTMLDivElement;
+const thursday = document.getElementById("thursday") as HTMLDivElement;
+const friday = document.getElementById("friday") as HTMLDivElement;
+const saturday = document.getElementById("saturday") as HTMLDivElement;
+const sunday = document.getElementById("sunday") as HTMLDivElement;
 
 const temp_units_container = document.getElementById(
   "temp-units-container"
-) as HTMLElement;
+) as HTMLDivElement;
 const fahrenheight_toggle = document.getElementById(
   "fahrenheight-button"
 ) as HTMLButtonElement;
@@ -37,26 +38,26 @@ const celcius_toggle = document.getElementById(
 
 const current_day_of_week = document.getElementById(
   "current-day-of-week"
-) as HTMLElement;
+) as HTMLDivElement;
 const current_weather_icon = document.getElementById(
   "weather-status-icon-7"
-) as HTMLElement;
+) as HTMLDivElement;
 const current_precip_percent = document.getElementById(
   "precip-percent-7"
-) as HTMLElement;
+) as HTMLDivElement;
 const current_temp = document.getElementById(
   "current-temperature"
-) as HTMLElement;
+) as HTMLDivElement;
 const current_min_temp = document.getElementById(
   "low-temperature-7"
-) as HTMLElement;
+) as HTMLDivElement;
 const current_max_temp = document.getElementById(
   "high-temperature-7"
-) as HTMLElement;
+) as HTMLDivElement;
 const current_humidity = document.getElementById(
   "current-humidity"
-) as HTMLElement;
-const current_wind = document.getElementById("wind-7") as HTMLElement;
+) as HTMLDivElement;
+const current_wind = document.getElementById("wind-7") as HTMLDivElement;
 
 const days = [sunday, monday, tuesday, wednesday, thursday, friday, saturday];
 const days_str = [
@@ -207,6 +208,8 @@ async function getCurrentLocation(latitude: number, longitude: number) {
 
     let res_value = await res.clone().json();
 
+    container.style.display = "flex";
+
     showCityName(
       `${res_value["LocalizedName"]}, ${res_value["AdministrativeArea"]["ID"]}`
     );
@@ -300,7 +303,7 @@ function handleKeyboardAutofillNavigation(e: KeyboardEvent) {
       }
       num_autofill_results[autofill_nav_index].className =
         "keyboard-navigated-autofill";
-      (num_autofill_results[autofill_nav_index] as HTMLElement)?.focus();
+      (num_autofill_results[autofill_nav_index] as HTMLDivElement)?.focus();
     }
   } else if (e.key === "ArrowUp") {
     e.preventDefault();
@@ -316,7 +319,7 @@ function handleKeyboardAutofillNavigation(e: KeyboardEvent) {
         }
         num_autofill_results[autofill_nav_index].className =
           "keyboard-navigated-autofill";
-        (num_autofill_results[autofill_nav_index] as HTMLElement)?.focus();
+        (num_autofill_results[autofill_nav_index] as HTMLDivElement)?.focus();
       }
     }
   }
@@ -349,7 +352,7 @@ function resetAutofillNavigation() {
   autofill_nav_index = -1;
   for (const result of Array.from(num_autofill_results)) {
     result.className = "";
-    (result as HTMLElement)?.blur();
+    (result as HTMLDivElement)?.blur();
   }
 
   window.removeEventListener("keydown", handleKeyboardAutofillNavigation);
@@ -358,6 +361,9 @@ function resetAutofillNavigation() {
 function preRenderWeather(result: IAutofillResult) {
   res_list.style.height = "0";
   res_list.style.borderWidth = "0";
+
+  autofill_results = [];
+  container.style.display = "flex";
 
   showCityName(formatLocation(result));
   renderWeather(result["Key"]);
@@ -374,10 +380,13 @@ function formatLocation(location: IAutofillResult) {
 }
 
 search_button.addEventListener("click", () => {
-  if (autofill_results) {
+  if (autofill_results && autofill_results.length > 0) {
     preRenderWeather(
       autofill_results[autofill_nav_index === -1 ? 0 : autofill_nav_index]
     );
+  } else {
+    city_name.style.display = "none";
+    container.style.display = "none";
   }
 });
 
@@ -487,91 +496,91 @@ function calculateBackgroundGradientByTemps(
   let coldestHSLValue, hottestHSLValue;
 
   if (min_weekly_temp <= -40) {
-    coldestHSLValue = "hsl(240 100% 20%)";
+    coldestHSLValue = "hsl(240 100% 35%)";
   } else if (min_weekly_temp > -40 && min_weekly_temp <= 0) {
-    coldestHSLValue = "hsl(240 100% 30%)";
+    coldestHSLValue = "hsl(240 100% 45%)";
   } else if (min_weekly_temp > 0 && min_weekly_temp <= 30) {
-    coldestHSLValue = "hsl(240 100% 50%)";
+    coldestHSLValue = "hsl(240 100% 65%)";
   } else if (min_weekly_temp > 30 && min_weekly_temp <= 50) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
       min_weekly_temp,
       [30, 50],
       [240, 180]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (min_weekly_temp > 50 && min_weekly_temp <= 70) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
       min_weekly_temp,
       [50, 70],
       [60, 55]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (min_weekly_temp > 70 && min_weekly_temp <= 80) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
       min_weekly_temp,
       [70, 80],
       [55, 40]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (min_weekly_temp > 80 && min_weekly_temp <= 90) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
       min_weekly_temp,
       [80, 90],
       [40, 20]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (min_weekly_temp > 90 && min_weekly_temp <= 100) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
       min_weekly_temp,
       [90, 100],
       [20, 10]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (min_weekly_temp > 100) {
     coldestHSLValue = `hsl(${mapTempsToColorRange(
       min_weekly_temp,
       [100, 130],
       [10, 0]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   }
 
   if (max_weekly_temp <= -40) {
-    hottestHSLValue = "hsl(240 100% 20%)";
+    hottestHSLValue = "hsl(240 100% 35%)";
   } else if (max_weekly_temp > -40 && max_weekly_temp <= 0) {
-    hottestHSLValue = "hsl(240 100% 30%)";
+    hottestHSLValue = "hsl(240 100% 45%)";
   } else if (max_weekly_temp > 0 && max_weekly_temp <= 30) {
-    hottestHSLValue = "hsl(240 100% 50%)";
+    hottestHSLValue = "hsl(240 100% 65%)";
   } else if (max_weekly_temp > 30 && max_weekly_temp <= 50) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
       max_weekly_temp,
       [30, 50],
       [240, 180]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (max_weekly_temp > 50 && max_weekly_temp <= 70) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
       max_weekly_temp,
       [50, 70],
       [60, 55]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (max_weekly_temp > 70 && max_weekly_temp <= 80) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
       max_weekly_temp,
       [70, 80],
       [55, 40]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (max_weekly_temp > 80 && max_weekly_temp <= 90) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
       max_weekly_temp,
       [80, 90],
       [40, 20]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (max_weekly_temp > 90 && max_weekly_temp <= 100) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
       max_weekly_temp,
       [90, 100],
       [20, 10]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   } else if (max_weekly_temp > 100) {
     hottestHSLValue = `hsl(${mapTempsToColorRange(
       max_weekly_temp,
       [100, 130],
       [10, 0]
-    )} 100% 50%)`;
+    )} 100% 65%)`;
   }
 
   document.documentElement.style.setProperty(
@@ -635,6 +644,8 @@ async function renderWeather(city_loc: string) {
     "2rem"
   );
 
+  container.style.pointerEvents = "auto";
+
   startSkeletonAnimation();
 
   let five_day_forecast = await getWeeklyWeather(city_loc);
@@ -676,16 +687,16 @@ async function renderWeather(city_loc: string) {
       // references to dynamic html elems
       const forecast_weather_icon = document.getElementById(
         `weather-status-icon-${current_forecast_days_indicies[i]}`
-      ) as HTMLElement;
+      ) as HTMLDivElement;
       const forecast_precip_percent = document.getElementById(
         `precip-percent-${current_forecast_days_indicies[i]}`
-      ) as HTMLElement;
+      ) as HTMLDivElement;
       const forecast_min_temp = document.getElementById(
         `low-temperature-${current_forecast_days_indicies[i]}`
-      ) as HTMLElement;
+      ) as HTMLDivElement;
       const forecast_max_temp = document.getElementById(
         `high-temperature-${current_forecast_days_indicies[i]}`
-      ) as HTMLElement;
+      ) as HTMLDivElement;
 
       if (i === 0) {
         current_day_of_week.innerHTML = days_str[current_day_idx];
