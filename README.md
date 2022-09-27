@@ -1,6 +1,6 @@
 # Universal Forecast
 
-live site: [Universal Forecast](https://drawingdash.com/).
+live site: [Universal Forecast](https://michaelongaro.github.io/UniversalForecast/).
 
 ## Description
 
