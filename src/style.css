@@ -42,7 +42,6 @@
     overflow: hidden;
 }
 
-/* test this when api resets */
 * {
     transition: all 200ms;
 }
@@ -53,7 +52,6 @@
 
 #container * {
     opacity: var(--container-opacities);
-    /* width: var(--container-widths); */
     height: var(--container-heights);
     user-select: var(--container-user-select);
     transition: all 200ms;
@@ -68,10 +66,8 @@ body {
 
     margin: 0;
 
-    /* font-family: "M PLUS 1", sans-serif; */
     font-family: "Hero", sans-serif;
 
-    /* background: linear-gradient(127deg, #393ce8, #2fc3e4, #9dbabb); */
     background: linear-gradient(127deg,
             var(--background-coldest-gradient-color),
             var(--background-hottest-gradient-color));
@@ -141,9 +137,17 @@ body {
     max-height: 5.5rem;
 }
 
+#weather-status-icon-7 img {
+    transform: scale(1.4);
+}
+
+.day-precip-container div>img {
+    transform: scale(1.2);
+}
+
 .day-precip-container div>img,
 #weather-status-icon-7 img {
-    filter: drop-shadow(1px 3px 5px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.4));
 }
 
 .day-icon-precip-container {
@@ -191,8 +195,6 @@ input[type="text"]::placeholder {
 
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    /* backdrop-filter: blur(8.2px);
-    -webkit-backdrop-filter: blur(8.2px); */
     border: 2px solid rgba(255, 255, 255, 0.25);
 
     transition: all 200ms;
@@ -242,7 +244,6 @@ input[type="text"]::placeholder {
 .high-container>div:first-child,
 #humidity-container>div:first-child,
 #wind-container>div:first-child {
-    /* color: #ffffffe6; */
     color: #ffffff;
     text-shadow: 1px 1px 3px #000000;
 }
@@ -344,8 +345,6 @@ input[type="text"]::placeholder {
     background: rgba(255, 255, 255, 0.18);
     border-radius: 1rem;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    /* backdrop-filter: blur(8.2px);
-    -webkit-backdrop-filter: blur(8.2px); */
     border: 2px solid rgba(255, 255, 255, 0.25);
 
     opacity: var(--day-opacity) !important;
