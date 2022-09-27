@@ -696,6 +696,11 @@ async function renderWeather(city_loc: string) {
       const currentHours = currentHoursInTimezone(
         formatted_forecast[i]["Date"]
       );
+
+      // currently always sets to "Day" because the Date property returns the time
+      // at the start of the day, need to send the location key through the
+      // "locationKey" api from accuweather to get the timezone and then calculate
+      // the currentHours based on that value.
       const morningOrEvening = currentHours < 21 ? "Day" : "Night";
 
       // references to dynamic html elems
@@ -742,5 +747,5 @@ async function renderWeather(city_loc: string) {
         forecast_max_temp.innerHTML = `${formatted_forecast[i].Temperature.Maximum.Value}°F`;
       }
     }
-  }, 4100);
+  }, 3400);
 }
