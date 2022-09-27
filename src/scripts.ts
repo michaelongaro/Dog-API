@@ -419,16 +419,30 @@ function changeTemperatureUnit(convertToCelcius: boolean) {
   const current_temp = document.getElementById(
     "current-temperature"
   )?.innerHTML;
+  const current_low = document.getElementById("low-temperature-7")?.innerHTML;
+  const current_high = document.getElementById("high-temperature-7")?.innerHTML;
 
-  if (current_temp) {
+  if (current_temp && current_low && current_high) {
     if (convertToCelcius) {
       document.getElementById("current-temperature")!.innerHTML = `${Math.round(
         (5 / 9) * (parseInt(current_temp) - 32)
+      )}°C`;
+      document.getElementById("low-temperature-7")!.innerHTML = `${Math.round(
+        (5 / 9) * (parseInt(current_low) - 32)
+      )}°C`;
+      document.getElementById("high-temperature-7")!.innerHTML = `${Math.round(
+        (5 / 9) * (parseInt(current_high) - 32)
       )}°C`;
     } else {
       document.getElementById("current-temperature")!.innerHTML = `${Math.round(
         (9 / 5) * parseInt(current_temp) + 32
       )}°F`;
+      document.getElementById("low-temperature-7")!.innerHTML = `${Math.round(
+        (9 / 5) * parseInt(current_low) + 32
+      )}°C`;
+      document.getElementById("high-temperature-7")!.innerHTML = `${Math.round(
+        (9 / 5) * parseInt(current_high) + 32
+      )}°C`;
     }
   }
 
