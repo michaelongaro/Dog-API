@@ -93,7 +93,7 @@ body {
 
 #title {
     color: #ffffffe6;
-    text-shadow: 1px 1px 8px #000000;
+    text-shadow: 0px 1px 5px #000000;
     margin-bottom: 2rem;
 }
 
@@ -263,7 +263,7 @@ input[type="text"]::placeholder {
 .high-container,
 #humidity-container,
 #wind-container {
-    height: fit-content;
+    height: fit-content !important;
 }
 
 #precip-percent-0,
