@@ -22,7 +22,6 @@ const search_button = document.getElementById(
 const search = document.getElementById("search") as HTMLInputElement;
 const res_list = document.getElementById("result-list") as HTMLDivElement;
 
-// const current_day = document.getElementById("current-day") as HTMLDivElement;
 const monday = document.getElementById("monday") as HTMLDivElement;
 const tuesday = document.getElementById("tuesday") as HTMLDivElement;
 const wednesday = document.getElementById("wednesday") as HTMLDivElement;
@@ -31,9 +30,6 @@ const friday = document.getElementById("friday") as HTMLDivElement;
 const saturday = document.getElementById("saturday") as HTMLDivElement;
 const sunday = document.getElementById("sunday") as HTMLDivElement;
 
-// const temp_units_container = document.getElementById(
-//   "temp-units-container"
-// ) as HTMLDivElement;
 const fahrenheight_toggle = document.getElementById(
   "fahrenheight-button"
 ) as HTMLButtonElement;
