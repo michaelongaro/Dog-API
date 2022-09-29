@@ -16,6 +16,7 @@
 @font-face {
     font-family: "Hero";
     src: url("../assets/Hero-Regular.ttf") format("truetype");
+    font-display: swap;
 }
 
 /* Custom scrollbar for autofill*/
