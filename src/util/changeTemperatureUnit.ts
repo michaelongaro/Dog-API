@@ -51,10 +51,10 @@ export default function changeTemperatureUnit(
       )}°F`;
       document.getElementById("low-temperature-7")!.innerHTML = `${Math.round(
         (9 / 5) * parseInt(current_low) + 32
-      )}°C`;
+      )}°F`;
       document.getElementById("high-temperature-7")!.innerHTML = `${Math.round(
         (9 / 5) * parseInt(current_high) + 32
-      )}°C`;
+      )}°F`;
     }
   }
 
