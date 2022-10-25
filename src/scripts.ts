@@ -72,11 +72,15 @@ current_location_search.addEventListener("click", () => {
 });
 
 fahrenheight_toggle.addEventListener("click", () => {
-  changeTemperatureUnit(false, fahrenheight_toggle, celcius_toggle);
+  if (!fahrenheight_toggle.classList.contains("toggled")) {
+    changeTemperatureUnit(false, fahrenheight_toggle, celcius_toggle);
+  }
 });
 
 celcius_toggle.addEventListener("click", () => {
-  changeTemperatureUnit(true, fahrenheight_toggle, celcius_toggle);
+  if (!celcius_toggle.classList.contains("toggled")) {
+    changeTemperatureUnit(true, fahrenheight_toggle, celcius_toggle);
+  }
 });
 
 function clearAutofillResults() {
